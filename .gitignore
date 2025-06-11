@@ -2,8 +2,8 @@
 node_modules/
 npm-debug.log*
 
-# Build output
-dist/
+# Build output (uncomment out when using GitHub actions)
+# dist/
 
 # Environment variables
 .env
