@@ -342,7 +342,7 @@ When `GITBOOK_ORGANIZATION_ID` or `GITBOOK_SPACE_ID` are configured:
 ## Installation & Setup
 
 ### Prerequisites
-- Node.js 16+ 
+- Node.js 20+ 
 - npm or yarn
 - GitBook API token (obtain from https://app.gitbook.com/account/developer)
 
@@ -371,8 +371,8 @@ Add to your Claude Desktop MCP settings:
 {
   "mcpServers": {
     "gitbook": {
-      "command": "node",
-      "args": ["/path/to/gitbook-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["gitbook-mcp"],
       "env": {
         "GITBOOK_API_TOKEN": "gb_live_your_token_here"
       }
