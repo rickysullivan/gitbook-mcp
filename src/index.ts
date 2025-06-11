@@ -20,7 +20,7 @@ const sendLogMessage = (level: string, message: string) => {
     method: "notifications/message",
     params: {
       level: level,
-      logger: "gitbook-mcp-server",
+      logger: "gitbook-mcp",
       data: message,
     },
   };
@@ -65,86 +65,6 @@ const argv = yargs(hideBin(process.argv))
   })
   .help()
   .parseSync() as CLIArgs;
-
-// Configuration hierarchy functions
-function readConfigFromCopilotInstructions(): {
-  organizationId?: string;
-  spaceId?: string;
-} {
-  const possiblePaths = [
-    join(projectRoot, ".github", "copilot-instructions.md"),
-    join(projectRoot, ".cursorrules"),
-    join(projectRoot, ".cursor", "rules", "rules.md"),
-    join(projectRoot, ".cursor", "rules", "instructions.md"),
-  ];
-
-  for (const configPath of possiblePaths) {
-    if (existsSync(configPath)) {
-      try {
-        const content = readFileSync(configPath, "utf-8");
-        const config: { organizationId?: string; spaceId?: string } = {};
-
-        // Look for standardized patterns
-        const patterns = {
-          organizationId: [
-            /organization-id:\s*([a-zA-Z0-9-]+)/i,
-            /org-id:\s*([a-zA-Z0-9-]+)/i,
-            /gitbook[_-]?org[_-]?id:\s*([a-zA-Z0-9-]+)/i,
-            /default[_-]?organization:\s*([a-zA-Z0-9-]+)/i,
-          ],
-          spaceId: [
-            /space-id:\s*([a-zA-Z0-9-]+)/i,
-            /gitbook[_-]?space[_-]?id:\s*([a-zA-Z0-9-]+)/i,
-            /default[_-]?space:\s*([a-zA-Z0-9-]+)/i,
-          ],
-        };
-
-        // Check organization ID patterns
-        for (const pattern of patterns.organizationId) {
-          const match = content.match(pattern);
-          if (match && match[1]) {
-            config.organizationId = match[1];
-            break;
-          }
-        }
-
-        // Check space ID patterns
-        for (const pattern of patterns.spaceId) {
-          const match = content.match(pattern);
-          if (match && match[1]) {
-            config.spaceId = match[1];
-            break;
-          }
-        }
-
-        // Also look for GitBook URLs and extract IDs
-        const urlPattern = /gitbook\.com\/([^\/]+)\/([a-zA-Z0-9-]+)/g;
-        const urlMatch = urlPattern.exec(content);
-        if (urlMatch) {
-          if (!config.organizationId && urlMatch[1]) {
-            config.organizationId = urlMatch[1];
-          }
-          if (!config.spaceId && urlMatch[2]) {
-            config.spaceId = urlMatch[2];
-          }
-        }
-
-        if (config.organizationId || config.spaceId) {
-          if (DEBUG) {
-            console.error(`🔍 Debug: Found config in ${configPath}:`, config);
-          }
-          return config;
-        }
-      } catch (error) {
-        if (DEBUG) {
-          console.error(`🔍 Debug: Error reading ${configPath}:`, error);
-        }
-      }
-    }
-  }
-
-  return {};
-}
 
 // Apply configuration hierarchy: CLI args > Copilot instructions > Environment variables
 function resolveConfiguration() {
@@ -196,12 +116,12 @@ for (const envFile of envFiles) {
   if (existsSync(envFile)) {
     const result = config({ path: envFile, override: true });
     if (result.error) {
-      console.error(
-        `⚠️  Warning: Error loading ${envFile}:`,
-        result.error.message
+      sendLogMessage(
+        "warn",
+        `⚠️  Warning: Error loading ${envFile}: ${result.error.message}`
       );
     } else {
-      sendLogMessage("info", `✅ Loaded environment from: ${envFile}`);
+      sendLogMessage("info", `✅ Loaded environment from: "${envFile}"`);
       envLoaded = true;
       break;
     }
@@ -211,7 +131,8 @@ for (const envFile of envFiles) {
 }
 
 if (!envLoaded) {
-  console.error(
+  sendLogMessage(
+    "warn",
     `📁 No environment files found. Checked: ${envFiles.join(", ")}`
   );
 }
@@ -570,39 +491,60 @@ const organizationId = resolvedConfig.organizationId;
 const defaultSpaceId = resolvedConfig.spaceId;
 
 if (!apiToken) {
-  console.error("❌ GITBOOK_API_TOKEN environment variable is required");
-  console.error("💡 Please set your GitBook API token in your .env file");
-  console.error("💡 Example: GITBOOK_API_TOKEN=your_token_here");
-  console.error(
+  sendLogMessage(
+    "error",
+    "❌ GITBOOK_API_TOKEN environment variable is required"
+  );
+  sendLogMessage(
+    "error",
+    "💡 Please set your GitBook API token in your .env file"
+  );
+  sendLogMessage("error", "💡 Example: GITBOOK_API_TOKEN=your_token_here");
+  sendLogMessage(
+    "error",
     "💡 Get your token from: https://app.gitbook.com/account/developer"
   );
 
-  console.error("\n📋 Configuration Summary:");
+  sendLogMessage("info", "\n📋 Configuration Summary:");
   if (organizationId) {
     const source = argv.organizationId
       ? "CLI argument"
       : "environment variable";
-    console.error(`💡 Organization ID: ${organizationId} (from ${source})`);
+    sendLogMessage(
+      "info",
+      `💡 Organization ID: ${organizationId} (from ${source})`
+    );
   } else {
-    console.error("💡 No Organization ID configured");
-    console.error("   • Use --organization-id CLI argument");
-    console.error(
+    sendLogMessage("info", "💡 No Organization ID configured");
+    sendLogMessage("info", "   • Use --organization-id CLI argument");
+    sendLogMessage(
+      "info",
       '   • Add "organization-id: your-org-id" to .github/copilot-instructions.md'
     );
-    console.error("   • Set GITBOOK_ORGANIZATION_ID environment variable");
-    console.error("   • Use list_organizations tool to find your org ID");
+    sendLogMessage(
+      "info",
+      "   • Set GITBOOK_ORGANIZATION_ID environment variable"
+    );
+    sendLogMessage(
+      "info",
+      "   • Use list_organizations tool to find your org ID"
+    );
   }
 
   if (defaultSpaceId) {
     const source = argv.spaceId ? "CLI argument" : "environment variable";
-    console.error(`💡 Default Space ID: ${defaultSpaceId} (from ${source})`);
+    sendLogMessage(
+      "info",
+      `💡 Default Space ID: ${defaultSpaceId} (from ${source})`
+    );
   } else {
-    console.error("💡 No default Space ID configured");
-    console.error("   • Use --space-id CLI argument");
-    console.error(
+    sendLogMessage("info", "💡 No default Space ID configured");
+    sendLogMessage("info", "   • Use --space-id CLI argument");
+    sendLogMessage(
+      "info",
       '   • Add "space-id: your-space-id" to .github/copilot-instructions.md'
     );
-    console.error("   • Set GITBOOK_SPACE_ID environment variable");
+    sendLogMessage("info", "   • Set GITBOOK_SPACE_ID environment variable");
   }
 
   process.exit(1);
@@ -1092,10 +1034,10 @@ Start by retrieving the space content structure to understand the overall organi
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  sendLogMessage("info", "GitBook MCP server running on stdio");
+  sendLogMessage("info", "👟 GitBook MCP server running on stdio");
 }
 
 main().catch((error) => {
-  console.error("Fatal error:", error);
+  sendLogMessage("error", `Fatal error: ${error}`);
   process.exit(1);
 });
