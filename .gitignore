@@ -56,3 +56,4 @@ jspm_packages/
 .yarn-integrity
 
 .github/
+*.code-workspace
