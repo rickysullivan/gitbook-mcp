@@ -2,21 +2,21 @@
   "name": "gitbook-mcp",
   "version": "1.0.0",
   "description": "GitBook Model Context Protocol server - read and search GitBook documentation with AI assistants",
-  "main": "build/index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "dev": "tsx --watch src/index.ts",
-    "build": "tsc && chmod 755 build/index.js",
-    "inspect": "npm run build && mcp-inspector node build/index.js",
-    "start": "node build/index.js",
+    "build": "tsc && chmod 755 dist/index.js",
+    "inspect": "npm run build && mcp-inspector node dist/index.js",
+    "start": "node dist/index.js",
     "test": "tsc --noEmit",
     "setup": "cp .env.local .env.local && echo '✅ Created .env.local - now edit it with your GitBook API token'"
   },
   "bin": {
-    "gitbook-mcp": "./build/index.js"
+    "gitbook-mcp": "./dist/index.js"
   },
   "files": [
-    "build"
+    "dist"
   ],
   "keywords": [
     "mcp",
