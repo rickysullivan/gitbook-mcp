@@ -5,9 +5,20 @@
 Create a `.env.local` file (don't commit this to version control):
 
 ```bash
-# Your GitBook API Token
+# Required: Your GitBook API Token
 GITBOOK_API_TOKEN=gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional: Organization ID to filter spaces and operations
+# Use the list_organizations tool to find your organization ID
+GITBOOK_ORG_ID=your_organization_id_here
 ```
+
+**Environment Variable Details:**
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GITBOOK_API_TOKEN` | Yes | Your GitBook API token from https://app.gitbook.com/account/developer |
+| `GITBOOK_ORG_ID` | No | Organization ID to filter spaces. Helpful when you have access to multiple organizations |
 
 ## MCP Client Configurations
 
@@ -33,7 +44,8 @@ Add to `~/.config/Claude/claude_desktop_config.json`
         "start"
       ],
       "env": {
-        "GITBOOK_API_TOKEN": "gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        "GITBOOK_API_TOKEN": "gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "GITBOOK_ORG_ID": "your_org_id_here"
       }
     }
   }
@@ -45,6 +57,7 @@ Add to `~/.config/Claude/claude_desktop_config.json`
 Add the following to your VS Code `settings.json` (open Command Palette → "Preferences: Open Settings (JSON)"):
 
 ```json
+```json
 "mcp.servers": {
   "gitbook": {
     "command": "npx",
@@ -53,11 +66,13 @@ Add the following to your VS Code `settings.json` (open Command Palette → "Pre
       "start"
     ],
     "env": {
-      "GITBOOK_API_TOKEN": "gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      "GITBOOK_API_TOKEN": "gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "GITBOOK_ORG_ID": "your_org_id_here"
     },
     "transport": "stdio"
   }
 }
+```
 ```
 
 Make sure to replace the API token with your actual value. Restart VS Code after saving the settings.
@@ -75,7 +90,7 @@ Make sure to replace the API token with your actual value. Restart VS Code after
 ```json
 {
   "mcpServers": {
-    "gitlab": {
+    "gitbook": {
       "command": "npx",
       "args": [
         "-y",
@@ -83,6 +98,7 @@ Make sure to replace the API token with your actual value. Restart VS Code after
       ],
       "env": {
         "GITBOOK_API_TOKEN": "gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "GITBOOK_ORG_ID": "your_org_id_here"
       }
     }
   }
@@ -104,7 +120,8 @@ Add the following to `~/.config/github-copilot/intellij/mcp.json`
       "start"
     ],
     "env": {
-      "GITBOOK_API_TOKEN": "gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      "GITBOOK_API_TOKEN": "gb_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "GITBOOK_ORG_ID": "your_org_id_here"
     },
     "transport": "stdio"
   }
@@ -120,7 +137,9 @@ For other MCP clients, use these connection details:
 
 - **Transport**: stdio
 - **Command**: `/path/to/gitbook-mcp/index.js`
-- **Environment**: `GITBOOK_API_TOKEN=your_token_here`
+- **Environment**: 
+  - `GITBOOK_API_TOKEN=your_token_here` (required)
+  - `GITBOOK_ORG_ID=your_org_id_here` (optional)
 
 ## Testing the Server
 
@@ -210,3 +229,24 @@ To enable debug logging, you can modify the server to log requests:
 # Add this before running the server
 export DEBUG=1
 ```
+
+## Finding Your Organization ID
+
+To find your organization ID:
+
+1. **Using the MCP Server**: Once configured with just your API token, use the `list_organizations` tool to see all organizations you have access to. The response will include the organization IDs.
+
+2. **From GitBook URL**: When you're in your GitBook workspace, look at the URL:
+   - `https://app.gitbook.com/o/{ORG_ID}/...`
+   - The `{ORG_ID}` part is your organization ID
+
+3. **Using GitBook API directly**:
+   ```bash
+   curl -H "Authorization: Bearer gb_live_your_token_here" \
+        https://api.gitbook.com/v1/orgs
+   ```
+
+Setting `GITBOOK_ORG_ID` is helpful when:
+- You have access to multiple organizations
+- You want to filter the `list_spaces` results to only show spaces from a specific organization
+- You want to avoid accidentally accessing the wrong organization's content

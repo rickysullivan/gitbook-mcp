@@ -66,23 +66,18 @@ if (!envLoaded) {
 
 // Types based on GitBook API OpenAPI specification
 interface GitBookSpace {
-  object: 'space';
   id: string;
   title: string;
-  emoji?: string;
+  description?: string;
   visibility: 'public' | 'unlisted' | 'visitor-authentication' | 'members-only' | 'inherited';
-  createdAt: string;
-  updatedAt: string;
-  deletedAt?: string;
-  editMode?: string;
-  urls: {
-    location: string;
-    app: string;
+  organizationId?: string;
+  urls?: {
+    app?: string;
     published?: string;
-    public?: string;
-    icon?: string;
   };
-  organization: string;
+  createdAt?: string;
+  updatedAt?: string;
+  kind?: 'space';
   parent?: string;
   gitSync?: {
     enabled: boolean;
@@ -92,27 +87,18 @@ interface GitBookSpace {
 }
 
 interface GitBookOrganization {
-  object: 'organization';
   id: string;
   title: string;
-  createdAt: string;
-  emailDomains?: string[];
-  hostname?: string;
-  type?: string;
-  useCase?: string;
-  communityType?: string;
-  defaultRole?: string;
-  defaultContent?: string;
-  sso?: boolean;
-  ai?: boolean;
-  inviteLinks?: boolean;
-  plan?: any;
-  billing?: any;
-  urls: {
-    location: string;
-    app: string;
-    published?: string;
-    icon?: string;
+  description?: string;
+  urls?: {
+    app?: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+  kind?: 'organization';
+  avatar?: {
+    light?: string;
+    dark?: string;
   };
 }
 
@@ -147,22 +133,6 @@ interface GitBookPage {
   };
 }
 
-interface GitBookRevision {
-  object: 'revision';
-  id: string;
-  title?: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-  type: 'initial' | 'update' | 'merge';
-  parent?: string;
-  git?: {
-    oid: string;
-    message?: string;
-  };
-  pages: GitBookPage[];
-}
-
 interface GitBookContent {
   kind: 'document';
   document: {
@@ -172,7 +142,6 @@ interface GitBookContent {
 }
 
 interface GitBookFile {
-  object: 'file';
   id: string;
   name: string;
   path: string;
@@ -181,26 +150,6 @@ interface GitBookFile {
   createdAt?: string;
   updatedAt?: string;
   downloadURL?: string;
-}
-
-interface GitBookCollection {
-  object: 'collection';
-  id: string;
-  title: string;
-  description?: string;
-  organization: string;
-  parent?: string;
-  defaultLevel?: string;
-  urls: {
-    location: string;
-    app: string;
-  };
-  permissions?: {
-    view?: boolean;
-    admin?: boolean;
-    viewInviteLinks?: boolean;
-    create?: boolean;
-  };
 }
 
 // Error response interface from OpenAPI spec
@@ -266,10 +215,11 @@ class GitBookAPIClient {
   // Space operations
   async getSpaces(organizationId?: string): Promise<GitBookSpace[]> {
     const orgId = organizationId || this.organizationId;
-    if (!orgId) {
-      throw new Error('Organization ID is required to list spaces. Provide it via parameter or environment variable.');
+    let endpoint = '/spaces';
+    if (orgId) {
+      endpoint += `?organizationId=${orgId}`;
     }
-    const response = await this.makeRequest<{ items: GitBookSpace[] }>(`/orgs/${orgId}/spaces`);
+    const response = await this.makeRequest<{ items: GitBookSpace[] }>(endpoint);
     return response.items;
   }
 
@@ -277,8 +227,8 @@ class GitBookAPIClient {
     return this.makeRequest<GitBookSpace>(`/spaces/${spaceId}`);
   }
 
-  async getSpaceContent(spaceId: string): Promise<GitBookRevision> {
-    return this.makeRequest<GitBookRevision>(`/spaces/${spaceId}/content`);
+  async getSpaceContent(spaceId: string): Promise<{ pages: GitBookPage[] }> {
+    return this.makeRequest<{ pages: GitBookPage[] }>(`/spaces/${spaceId}/content`);
   }
 
   // Page operations
@@ -320,25 +270,6 @@ class GitBookAPIClient {
 
   async getFile(spaceId: string, fileId: string): Promise<GitBookFile> {
     return this.makeRequest<GitBookFile>(`/spaces/${spaceId}/files/${fileId}`);
-  }
-
-  // Collection operations
-  async getCollections(organizationId?: string): Promise<GitBookCollection[]> {
-    const orgId = organizationId || this.organizationId;
-    if (!orgId) {
-      throw new Error('Organization ID is required to list collections. Provide it via parameter or environment variable.');
-    }
-    const response = await this.makeRequest<{ items: GitBookCollection[] }>(`/orgs/${orgId}/collections`);
-    return response.items;
-  }
-
-  async getCollection(collectionId: string): Promise<GitBookCollection> {
-    return this.makeRequest<GitBookCollection>(`/collections/${collectionId}`);
-  }
-
-  async getCollectionSpaces(collectionId: string): Promise<GitBookSpace[]> {
-    const response = await this.makeRequest<{ items: GitBookSpace[] }>(`/collections/${collectionId}/spaces`);
-    return response.items;
   }
 }
 
@@ -548,55 +479,6 @@ server.tool(
   }
 );
 
-// Collection Tools
-server.tool(
-  "list_collections",
-  { organizationId: z.string().optional().describe('Organization ID to filter collections by') },
-  async ({ organizationId }) => {
-    const collections = await gitbookClient.getCollections(organizationId);
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(collections, null, 2)
-        }
-      ]
-    };
-  }
-);
-
-server.tool(
-  "get_collection",
-  { collectionId: z.string().describe('The ID of the collection to retrieve') },
-  async ({ collectionId }) => {
-    const collection = await gitbookClient.getCollection(collectionId);
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(collection, null, 2)
-        }
-      ]
-    };
-  }
-);
-
-server.tool(
-  "get_collection_spaces",
-  { collectionId: z.string().describe('The ID of the collection to get spaces from') },
-  async ({ collectionId }) => {
-    const spaces = await gitbookClient.getCollectionSpaces(collectionId);
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(spaces, null, 2)
-        }
-      ]
-    };
-  }
-);
-
 // Add resources for easy access to common data
 server.resource(
   "organizations",
@@ -614,16 +496,16 @@ server.resource(
 );
 
 server.resource(
-  "collections",
-  new ResourceTemplate("gitbook://collections/{organizationId?}", { 
+  "spaces",
+  new ResourceTemplate("gitbook://spaces/{organizationId?}", { 
     list: async () => {
       const organizations = await gitbookClient.getOrganizations();
       return {
         resources: organizations.map(org => ({
-          name: `Collections for ${org.title}`,
-          uri: `gitbook://collections/${org.id}`,
+          name: `Spaces for ${org.title}`,
+          uri: `gitbook://spaces/${org.id}`,
           mimeType: "application/json",
-          description: `All collections for organization: ${org.title}`
+          description: `All spaces for organization: ${org.title}`
         }))
       };
     }
@@ -631,11 +513,45 @@ server.resource(
   async (uri, { organizationId }) => {
     // ResourceTemplate parameters come as string arrays, get the first value
     const orgId = Array.isArray(organizationId) ? organizationId[0] : organizationId;
-    const collections = await gitbookClient.getCollections(orgId);
+    const spaces = await gitbookClient.getSpaces(orgId);
     return {
       contents: [{
         uri: uri.href,
-        text: JSON.stringify(collections, null, 2),
+        text: JSON.stringify(spaces, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+
+server.resource(
+  "space",
+  new ResourceTemplate("gitbook://space/{spaceId}", { list: undefined }),
+  async (uri, { spaceId }) => {
+    // ResourceTemplate parameters come as string arrays, get the first value
+    const id = Array.isArray(spaceId) ? spaceId[0] : spaceId;
+    const space = await gitbookClient.getSpace(id);
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(space, null, 2),
+        mimeType: "application/json"
+      }]
+    };
+  }
+);
+
+server.resource(
+  "space-content",
+  new ResourceTemplate("gitbook://space/{spaceId}/content", { list: undefined }),
+  async (uri, { spaceId }) => {
+    // ResourceTemplate parameters come as string arrays, get the first value
+    const id = Array.isArray(spaceId) ? spaceId[0] : spaceId;
+    const content = await gitbookClient.getSpaceContent(id);
+    return {
+      contents: [{
+        uri: uri.href,
+        text: JSON.stringify(content, null, 2),
         mimeType: "application/json"
       }]
     };
