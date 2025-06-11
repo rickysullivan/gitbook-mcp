@@ -3,7 +3,7 @@ node_modules/
 npm-debug.log*
 
 # Build output
-build/
+dist/
 
 # Environment variables
 .env
