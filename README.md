@@ -4,13 +4,13 @@ A Model Context Protocol (MCP) server that provides access to GitBook's API for 
 
 ## Overview
 
-The GitBook MCP server enables programmatic access to GitBook organizations, spaces, collections, and content through a standardized MCP interface. It provides 12 tools for content operations and 6 AI-powered prompts for documentation workflows.
+The GitBook MCP server enables programmatic access to GitBook Organizations, Spaces, Collections, and Content through a standardized MCP interface. It provides 12 tools for content operations and 6 AI-powered prompts for documentation workflows.
 
 ## Quick Setup
 
 ### Prerequisites
 - GitBook API token (obtain from https://app.gitbook.com/account/developer)
-- Your GitBook organization ID (optional but recommended)
+- Your GitBook Organization ID (optional but recommended)
 
 ### IDE and AI Assistant Integration
 
@@ -33,11 +33,10 @@ Add to your VS Code MCP settings:
 ```
 
 #### Claude Desktop
-Add to your Claude Desktop configuration (`~/AppData/Roaming/Claude/claude_desktop_config.json` on Windows or `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Add to your Claude Desktop configuration (`%APPDATA%\Claude\claude_desktop_config.json` on Windows or `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
 
 ```json
 {
-  "globalShortcut": "Alt+C",
   "mcpServers": {
     "gitbook-mcp": {
       "command": "npx",
@@ -50,8 +49,10 @@ Add to your Claude Desktop configuration (`~/AppData/Roaming/Claude/claude_deskt
 }
 ```
 
-#### IntelliJ IDEA / WebStorm / JetBrains IDEs
-Add to your JetBrains IDE MCP settings:
+See https://modelcontextprotocol.io/quickstart/user for details.
+
+#### GitHub Copilot plugin for JetBrains IDEs (IntelliJ IDEA, WebStorm, etc.):
+Add to your GitHub Copilot MCP settings for JetBrains IDEs (the path may vary by product and OS, e.g., `~/.config/github-copilot/intellij/mcp.json` for IntelliJ on Linux/macOS, or the equivalent directory for your JetBrains IDE and platform):
 
 ```json
 {
@@ -63,17 +64,22 @@ Add to your JetBrains IDE MCP settings:
         "--organization-id=your_organization_id_here"
       ],
       "env": {
-        "GITBOOK_API_KEY": "gb_api_your_token_here"
+        "GITBOOK_API_TOKEN": "gb_api_your_token_here"
       }
     }
   }
 }
 ```
 
+#### JetBrains AI Assistant
+
+Add to your JetBrains AI Assistant MCP configuration (see [official docs](https://www.jetbrains.com/help/ai-assistant/configure-an-mcp-server.html) for the exact path):
+
 ### Getting Your GitBook Credentials
 
 1. **API Token**: Visit https://app.gitbook.com/account/developer to generate your API token
-2. **Organization ID**: Use the `list_organizations` tool after setup to find your organization ID
+2. **Organization ID**: Use the `list_organizations` tool after setup to find your organization ID  
+3. **Space ID** (optional): Use the `list_spaces` tool (requires a valid organization ID and API token) to find specific space IDs
 3. **Space ID** (optional): Use the `list_spaces` tool to find specific space IDs
 
 ### Configuration Options
@@ -81,7 +87,7 @@ Add to your JetBrains IDE MCP settings:
 You can configure the server using:
 - **CLI arguments** (as shown above): `--organization-id`, `--space-id`
 - **Environment variables**: `GITBOOK_API_TOKEN`, `GITBOOK_ORGANIZATION_ID`, `GITBOOK_SPACE_ID`
-- **Configuration files**: `.env.local`, `.cursorrules`, etc.
+- **Configuration files**: `.env.local` or `.env`.
 
 ## API Reference
 
@@ -438,6 +444,8 @@ The GitBook MCP server supports multiple configuration methods with the followin
 | `GITBOOK_ORGANIZATION_ID` | No | string | Default organization ID for operations |
 | `GITBOOK_SPACE_ID` | No | string | Default space ID for single-space projects |
 
+> **Note:** Environment variables can be set in `.env.local`, `.env`, or your system environment.
+
 ### CLI Arguments
 
 | Argument | Alias | Type | Description |
@@ -450,14 +458,16 @@ The GitBook MCP server supports multiple configuration methods with the followin
 node dist/index.js --organization-id your-org-id --space-id your-space-id
 ```
 
-### Configuration Files
+### Additional Configuration Files
 
-The server reads configuration from these files (in order of precedence):
+Typically these files are provided as context to the AI assistant, which means you can store project-based configuration.
 
 1. `.github/copilot-instructions.md`
 2. `.cursorrules`
 3. `.cursor/rules/rules.md`
 4. `.cursor/rules/instructions.md`
+
+e.g. 
 
 **Format:**
 ```markdown
@@ -475,51 +485,61 @@ When `GITBOOK_ORGANIZATION_ID` or `GITBOOK_SPACE_ID` are configured:
 - The configured default values will be used automatically
 - Explicit parameters in tool calls override defaults
 
-## Installation & Setup
+## Development
 
 ### Prerequisites
 - Node.js 20+ 
-- npm or yarn
+- npm
 - GitBook API token (obtain from https://app.gitbook.com/account/developer)
 
-### Installation
+### Installation & Setup
+
 ```bash
+git clone https://github.com/rickysullivan/gitbook-mcp.git
+cd gitbook-mcp
 npm install
-npm run build
+npm run setup
+# Add your GITBOOK_API_TOKEN to .env.local
 ```
 
-### Basic Configuration
-Create a `.env.local` file:
+### Development
 ```bash
-GITBOOK_API_TOKEN=gb_live_your_token_here
+npm run dev
 ```
 
-### Running the Server
-
-#### Standalone
+### Debugging
 ```bash
-npm start
+DEBUG=1 npm run dev
 ```
 
-#### With Claude Desktop
-Add to your Claude Desktop MCP settings:
+### Add the MCP to VS Code for development
+You will need to use `node` as the command when running locally.
+The first arg should be the path to the compiled JavaScript output (e.g., `dist/index.js`).
+
 ```json
 {
-  "mcpServers": {
-    "gitbook": {
-      "command": "npx",
-      "args": ["gitbook-mcp"],
-      "env": {
-        "GITBOOK_API_TOKEN": "gb_live_your_token_here"
-      }
+    "servers": {
+        "gitbook-mcp-dev": {
+            "type": "stdio",
+            "command": "node",
+            "args": [ "/my/path/to/gitbook-mcp/dist/index.js", "--organization-id=Luj2l6y6cIUPXJwbC574"],
+            "env": {
+                "GITBOOK_API_TOKEN": "gb_api_UHEGTNsMg0ONPTnm0LpsJNBCCikQyOMkBTtZNDAB"
+            }
+        }
     }
-  }
 }
 ```
 
-## Error Handling
+### Testing
+There are currently no unit or integration tests; running `npm run test` only checks that the TypeScript code compiles successfully (type-check/build verification), and does not execute any actual tests.
+```bash
+npm run test
+```
 
-### Common Error Codes
+### Error Handling
+
+#### Common Error Codes
 
 | Error Code | Description | Resolution |
 |------------|-------------|------------|
@@ -546,40 +566,12 @@ Add to your Claude Desktop MCP settings:
 - Check file permissions on configuration files
 - Ensure CLI arguments are properly formatted
 
-## Development
-
-### Building
-```bash
-npm run build
-```
-
-### Testing
-```bash
-npm test
-```
-
-### Debugging
-```bash
-DEBUG=1 npm start
-```
-
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Submit a pull request
-
-### Development Setup
-```bash
-git clone https://github.com/rickysullivan/gitbook-mcp.git
-cd gitbook-mcp
-npm install
-cp .env.example .env.local
-# Add your GITBOOK_API_TOKEN to .env.local
-npm run build
-npm test
-```
 
 ## License
 
