@@ -13,8 +13,8 @@ The GitBook MCP server enables programmatic access to GitBook organizations, spa
 The GitBook MCP server provides 12 tools organized into functional categories. Each tool includes behavioral hints:
 
 - 📖 **Read-only**: Tool only reads data and doesn't modify anything
-- 🔄 **Idempotent**: Tool can be called multiple times safely with the same result  
-- 🌐 **Open-world**: Tool may return data not explicitly mentioned in its description
+- 🔄 **Idempotent**: Repeated calls with same args have no additional effect with the same result  
+- 🌐 **Open-world**: Tool interacts with external entities
 
 #### Organization Discovery
 
