@@ -1013,9 +1013,10 @@ server.resource(
   }
 );
 
-// Add helpful prompts for common use cases
+// Add comprehensive prompts for GitBook documentation workflows
 server.prompt(
   "fetch_documentation",
+  "Fetch and analyze GitBook documentation content for specific topics",
   {
     spaceId: z
       .string()
@@ -1074,7 +1075,8 @@ Start by using the search_content tool to find relevant pages, then use get_page
 );
 
 server.prompt(
-  "analyze_content_structure",
+  "analyze_content_gaps",
+  "Identify gaps and missing content in documentation",
   {
     spaceId: z
       .string()
@@ -1082,33 +1084,238 @@ server.prompt(
       .describe(
         "The GitBook space ID to analyze (uses default space if not provided)"
       ),
-    analysisType: z
+    comparisonSource: z
       .string()
       .optional()
-      .describe(
-        "Type of analysis: overview, gaps, organization, or completeness"
-      ),
+      .describe("Source to compare against (default: internal analysis)"),
   },
   (args) => {
-    const { spaceId, analysisType = "overview" } = args;
+    const { spaceId, comparisonSource = "internal analysis" } = args;
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
 
-    const promptText = `I need to analyze the content structure of a GitBook space.
+    const promptText = `I need to identify gaps and missing content in GitBook documentation.
 
 **Space ID**: ${effectiveSpaceId}
-**Analysis Type**: ${analysisType}
+**Comparison Source**: ${comparisonSource}
 
 Please help me:
 1. Get the complete space structure and content overview
-2. Analyze the documentation organization and hierarchy
-3. Identify the main topics and sections covered
-4. Assess the logical flow and navigation structure
-5. Highlight any organizational issues or improvements needed
+2. Analyze documentation for missing topics and incomplete sections
+3. Identify coverage gaps and prioritize them by importance
+4. Suggest new content areas that should be added
+5. Compare against ${comparisonSource} if relevant
+6. Create a prioritized list of content gaps to address
 
-Start by retrieving the space content structure to understand the overall organization.`;
+Start by using get_space_content to understand the current structure, then analyze individual pages with get_page_content to identify gaps.`;
 
     return {
-      description: `Analyze content structure for GitBook space`,
+      description: `Analyze content gaps in GitBook space`,
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: promptText,
+          },
+        },
+      ],
+    };
+  }
+);
+
+server.prompt(
+  "content_audit",
+  "Perform quality audits of documentation content",
+  {
+    spaceId: z
+      .string()
+      .optional()
+      .describe(
+        "The GitBook space ID to audit (uses default space if not provided)"
+      ),
+    auditCriteria: z
+      .string()
+      .optional()
+      .describe("Specific criteria to audit (default: general quality and consistency)"),
+  },
+  (args) => {
+    const { spaceId, auditCriteria = "general quality and consistency" } = args;
+    const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
+
+    const promptText = `I need to perform a comprehensive quality audit of GitBook documentation.
+
+**Space ID**: ${effectiveSpaceId}
+**Audit Criteria**: ${auditCriteria}
+
+Please help me:
+1. Review the space structure and organization
+2. Examine content quality and consistency across pages
+3. Check for outdated information and broken references
+4. Evaluate writing style and tone consistency
+5. Identify formatting and structural issues
+6. Assess completeness and accuracy of information
+7. Provide detailed improvement recommendations
+
+Start by using get_space_content to understand the structure, then systematically review pages with get_page_content. Use get_space_files to check for unused or missing assets.`;
+
+    return {
+      description: `Perform quality audit of GitBook documentation`,
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: promptText,
+          },
+        },
+      ],
+    };
+  }
+);
+
+server.prompt(
+  "documentation_summary",
+  "Generate comprehensive summaries of GitBook spaces",
+  {
+    spaceId: z
+      .string()
+      .optional()
+      .describe(
+        "The GitBook space ID to summarize (uses default space if not provided)"
+      ),
+    summaryType: z
+      .string()
+      .optional()
+      .describe("Type of summary: overview, technical, user-guide, or custom (default: overview)"),
+  },
+  (args) => {
+    const { spaceId, summaryType = "overview" } = args;
+    const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
+
+    const promptText = `I need to generate a comprehensive summary of GitBook documentation.
+
+**Space ID**: ${effectiveSpaceId}
+**Summary Type**: ${summaryType}
+
+Please help me:
+1. Analyze the space structure and content organization
+2. Identify main topics, themes, and coverage areas
+3. Create a ${summaryType} summary highlighting key sections
+4. Summarize the scope and purpose of the documentation
+5. Highlight important sections and entry points
+6. Identify the target audience and use cases
+7. Note any special features or unique aspects
+
+Start by using get_space_content to understand the overall structure, then selectively review key pages with get_page_content to create an accurate summary.`;
+
+    return {
+      description: `Generate ${summaryType} summary of GitBook space`,
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: promptText,
+          },
+        },
+      ],
+    };
+  }
+);
+
+server.prompt(
+  "content_optimization",
+  "Optimize content for SEO, readability, structure, or performance",
+  {
+    spaceId: z
+      .string()
+      .optional()
+      .describe(
+        "The GitBook space ID to optimize (uses default space if not provided)"
+      ),
+    optimizationType: z
+      .string()
+      .describe("Type of optimization: SEO, readability, structure, or performance"),
+    targetMetrics: z
+      .string()
+      .optional()
+      .describe("Specific metrics or goals to optimize for"),
+  },
+  (args) => {
+    const { spaceId, optimizationType, targetMetrics } = args;
+    const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
+
+    const promptText = `I need to optimize GitBook documentation content.
+
+**Space ID**: ${effectiveSpaceId}
+**Optimization Type**: ${optimizationType}
+**Target Metrics**: ${targetMetrics || "general improvement"}
+
+Please help me:
+1. Analyze current content for optimization opportunities
+2. Identify pages that need ${optimizationType} improvements
+3. Suggest specific optimization strategies and changes
+4. Prioritize optimizations by impact and effort
+5. Provide actionable recommendations for improvement
+6. Consider target metrics: ${targetMetrics || "overall quality"}
+
+Start by using get_space_content to understand the structure, then analyze individual pages with get_page_content. Use search_content to identify common patterns that need optimization.`;
+
+    return {
+      description: `Optimize GitBook content for ${optimizationType}`,
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: promptText,
+          },
+        },
+      ],
+    };
+  }
+);
+
+server.prompt(
+  "troubleshooting_assistant",
+  "Diagnose and resolve access, sync, content, and integration issues",
+  {
+    spaceId: z
+      .string()
+      .optional()
+      .describe(
+        "The GitBook space ID experiencing issues (uses default space if not provided)"
+      ),
+    issueType: z
+      .string()
+      .describe("Type of issue: access, sync, content, integration, or performance"),
+    description: z
+      .string()
+      .optional()
+      .describe("Description of the specific problem"),
+  },
+  (args) => {
+    const { spaceId, issueType, description } = args;
+    const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
+
+    const promptText = `I need help troubleshooting a GitBook issue.
+
+**Space ID**: ${effectiveSpaceId}
+**Issue Type**: ${issueType}
+**Description**: ${description || "Not specified"}
+
+Please help me:
+1. Diagnose the issue by examining relevant data and configuration
+2. Identify potential causes and contributing factors
+3. Check system status, permissions, and configuration
+4. Provide step-by-step troubleshooting procedures
+5. Suggest preventive measures to avoid similar issues
+6. Document the resolution process for future reference
+
+Start by using appropriate tools to gather information about the ${issueType} issue. Use get_space, get_space_content, and other relevant tools to understand the current state and identify problems.`;
+
+    return {
+      description: `Troubleshoot ${issueType} issue in GitBook space`,
       messages: [
         {
           role: "user",

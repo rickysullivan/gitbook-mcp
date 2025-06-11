@@ -1,62 +1,41 @@
 # GitBook MCP Server - AI Documentation Prompts
 
-This document provides comprehensive details about all 18 AI documentation prompts available in the GitBook MCP server. These prompts are designed to facilitate complex documentation workflows through conversational AI interfaces.
+This document provides comprehensive details about the 6 core AI documentation prompts implemented in the GitBook MCP server. These prompts are designed to facilitate essential documentation workflows through conversational AI interfaces and work seamlessly with the 12 available MCP tools.
 
-## Content Analysis & Planning Prompts
+## Implemented Prompts
 
 ### 1. fetch_documentation
 
 **Purpose**: Fetch and analyze GitBook documentation content for specific topics
 
 **Parameters**:
+- `spaceId` (optional): The GitBook space ID to search in (uses default space if not provided)
+- `topic` (required): The topic or keyword to search for in the documentation  
+- `includeStructure` (optional): Set to "true" to include the overall space structure in the analysis
 
-- `spaceId` (required): The GitBook space ID to search in
-- `topic` (required): The topic or keyword to search for
-- `includeStructure` (optional): Set to "true" to include space structure
+**Related MCP Tools**: `search_content`, `get_page_content`, `get_space_content`, `get_page_by_path`
 
 **Example Usage**:
-
 ```
 Use the fetch_documentation prompt with:
-- spaceId: "abc123"
+- spaceId: "abc123" 
 - topic: "authentication"
 - includeStructure: "true"
 ```
 
 **What it does**: Searches for content related to your topic, retrieves relevant pages, analyzes completeness, and identifies related sections. Optionally includes the overall space structure for context.
 
-### 2. update_documentation_plan
-
-**Purpose**: Create comprehensive plans for updating documentation
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID to analyze
-- `updateGoals` (required): Description of what you want to update
-- `targetAudience` (optional): Target audience for updates (default: "general users")
-
-**Example Usage**:
-
-```
-Use the update_documentation_plan prompt with:
-- spaceId: "abc123"
-- updateGoals: "Modernize API documentation and add more examples"
-- targetAudience: "developers"
-```
-
-**What it does**: Analyzes current content, identifies pages needing updates, creates prioritized plans, suggests improvements, and recommends best practices for your target audience.
-
-### 3. analyze_content_gaps
+### 2. analyze_content_gaps
 
 **Purpose**: Identify gaps and missing content in documentation
 
 **Parameters**:
-
-- `spaceId` (required): The GitBook space ID to analyze
+- `spaceId` (optional): The GitBook space ID to analyze (uses default space if not provided)
 - `comparisonSource` (optional): Source to compare against (default: "internal analysis")
 
-**Example Usage**:
+**Related MCP Tools**: `get_space_content`, `get_page_content`, `search_content`, `list_spaces`
 
+**Example Usage**:
 ```
 Use the analyze_content_gaps prompt with:
 - spaceId: "abc123"
@@ -65,17 +44,17 @@ Use the analyze_content_gaps prompt with:
 
 **What it does**: Analyzes documentation for missing topics, incomplete sections, identifies coverage gaps, suggests new content, and prioritizes gaps by importance.
 
-### 4. content_audit
+### 3. content_audit
 
 **Purpose**: Perform quality audits of documentation content
 
 **Parameters**:
-
-- `spaceId` (required): The GitBook space ID to audit
+- `spaceId` (optional): The GitBook space ID to audit (uses default space if not provided)
 - `auditCriteria` (optional): Specific criteria to audit (default: "general quality and consistency")
 
-**Example Usage**:
+**Related MCP Tools**: `get_space_content`, `get_page_content`, `get_space_files`, `get_space`, `get_collection`
 
+**Example Usage**:
 ```
 Use the content_audit prompt with:
 - spaceId: "abc123"
@@ -84,17 +63,17 @@ Use the content_audit prompt with:
 
 **What it does**: Reviews space structure, examines content quality and consistency, checks for outdated information, evaluates writing style, and provides improvement recommendations.
 
-### 5. documentation_summary
+### 4. documentation_summary
 
-**Purpose**: Generate summaries of GitBook spaces
+**Purpose**: Generate comprehensive summaries of GitBook spaces
 
 **Parameters**:
-
-- `spaceId` (required): The GitBook space ID to summarize
+- `spaceId` (optional): The GitBook space ID to summarize (uses default space if not provided)
 - `summaryType` (optional): Type of summary - "overview", "technical", "user-guide", or "custom" (default: "overview")
 
-**Example Usage**:
+**Related MCP Tools**: `get_space_content`, `get_page_content`, `get_space`, `list_collections`, `list_organizations`
 
+**Example Usage**:
 ```
 Use the documentation_summary prompt with:
 - spaceId: "abc123"
@@ -103,130 +82,18 @@ Use the documentation_summary prompt with:
 
 **What it does**: Analyzes space structure and content, identifies main topics and themes, creates targeted summaries, highlights important sections, and identifies documentation scope.
 
-### 6. migration_assessment
-
-**Purpose**: Assess content for migration or restructuring
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID to assess
-- `targetPlatform` (optional): Target platform for migration (default: "alternative documentation platform")
-
-**Example Usage**:
-
-```
-Use the migration_assessment prompt with:
-- spaceId: "abc123"
-- targetPlatform: "Notion"
-```
-
-**What it does**: Analyzes current structure, evaluates complexity and format requirements, identifies migration challenges, suggests restructuring opportunities, and creates migration plans.
-
-## Collaboration & Workflow Prompts
-
-### 7. collaboration_workflow
-
-**Purpose**: Set up collaboration workflows for reviews, updates, and team editing
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID for collaboration
-- `workflowType` (required): Type of collaboration - "review", "update", "team-edit", or "approval"
-- `assignees` (optional): Team members or reviewers to involve
-- `deadline` (optional): Target completion date
-
-**Example Usage**:
-
-```
-Use the collaboration_workflow prompt with:
-- spaceId: "abc123"
-- workflowType: "review"
-- assignees: "john@example.com, jane@example.com"
-- deadline: "2024-01-15"
-```
-
-**What it does**: Analyzes current content, sets up change requests, configures collaboration features, manages permissions, tracks progress, and ensures quality throughout the process.
-
-### 8. change_request_management
-
-**Purpose**: Create, review, merge, and analyze change requests
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID containing change requests
-- `action` (required): Action to perform - "create", "review", "merge", or "analyze"
-- `changeRequestId` (optional): Specific change request ID to work with
-- `description` (optional): Description for new change requests
-
-**Example Usage**:
-
-```
-Use the change_request_management prompt with:
-- spaceId: "abc123"
-- action: "create"
-- description: "Update API authentication documentation"
-```
-
-**What it does**: Manages the complete change request lifecycle, from creation through review to merging, while maintaining content quality and handling conflicts.
-
-### 9. permission_management
-
-**Purpose**: Audit, update, and troubleshoot space and user permissions
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID for permission management
-- `action` (required): Permission action - "audit", "update", "setup", or "troubleshoot"
-- `userType` (optional): Type of users to manage - "team", "external", or "specific-role" (default: "all users")
-
-**Example Usage**:
-
-```
-Use the permission_management prompt with:
-- spaceId: "abc123"
-- action: "audit"
-- userType: "external"
-```
-
-**What it does**: Reviews permission structures, audits access levels, identifies security concerns, recommends optimal structures, sets up role-based access, and monitors permission health.
-
-## Content Development Prompts
-
-### 10. api_documentation_generator
-
-**Purpose**: Generate comprehensive API documentation (REST, GraphQL, etc.)
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID for API documentation
-- `apiType` (required): Type of API - "REST", "GraphQL", "gRPC", or "WebSocket"
-- `sourceFormat` (optional): Source format - "OpenAPI", "schema files", or "manual" (default: "manual analysis")
-- `endpointFocus` (optional): Specific endpoints or areas to focus on
-
-**Example Usage**:
-
-```
-Use the api_documentation_generator prompt with:
-- spaceId: "abc123"
-- apiType: "REST"
-- sourceFormat: "OpenAPI"
-- endpointFocus: "authentication endpoints"
-```
-
-**What it does**: Creates comprehensive API documentation with examples, authentication details, error handling, best practices, interactive examples, and proper code samples.
-
-### 11. content_optimization
+### 5. content_optimization  
 
 **Purpose**: Optimize content for SEO, readability, structure, or performance
 
 **Parameters**:
-
-- `spaceId` (required): The GitBook space ID to optimize
+- `spaceId` (optional): The GitBook space ID to optimize (uses default space if not provided)
 - `optimizationType` (required): Type of optimization - "SEO", "readability", "structure", or "performance"
 - `targetMetrics` (optional): Specific metrics or goals to optimize for
 
-**Example Usage**:
+**Related MCP Tools**: `get_page_content`, `search_content`, `get_space_content`, `get_space_files`
 
+**Example Usage**:
 ```
 Use the content_optimization prompt with:
 - spaceId: "abc123"
@@ -236,68 +103,120 @@ Use the content_optimization prompt with:
 
 **What it does**: Analyzes content for optimization opportunities, identifies pages needing work, suggests specific improvements, prioritizes changes, and tracks improvement results.
 
-### 12. quality_assurance_check
+### 6. troubleshooting_assistant
 
-**Purpose**: Perform systematic QA checks on content, links, and formatting
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID to check
-- `checkType` (required): Type of QA check - "content", "links", "formatting", "consistency", or "comprehensive"
-- `severity` (optional): Focus level - "critical", "important", or "all issues" (default: "important")
-
-**Example Usage**:
-
-```
-Use the quality_assurance_check prompt with:
-- spaceId: "abc123"
-- checkType: "comprehensive"
-- severity: "critical"
-```
-
-**What it does**: Systematically reviews content for issues, categorizes problems by severity, checks for broken links and formatting errors, validates accuracy, and generates detailed QA reports.
-
-## Analytics & Strategy Prompts
-
-### 13. content_analytics
-
-**Purpose**: Analyze content for usage, performance, and engagement insights
+**Purpose**: Diagnose and resolve access, sync, content, and integration issues
 
 **Parameters**:
+- `spaceId` (optional): The GitBook space ID experiencing issues (uses default space if not provided)
+- `issueType` (required): Type of issue - "access", "sync", "content", "integration", or "performance"
+- `description` (optional): Description of the specific problem
 
-- `spaceId` (required): The GitBook space ID to analyze
-- `analysisType` (required): Type of analysis - "usage", "performance", "engagement", or "content-metrics"
-- `timeframe` (optional): Time period for analysis (default: "recent activity")
-
-**Example Usage**:
-
-```
-Use the content_analytics prompt with:
-- spaceId: "abc123"
-- analysisType: "engagement"
-- timeframe: "last 30 days"
-```
-
-**What it does**: Gathers relevant data, analyzes content structure and activity patterns, identifies high and low-performing content, reviews collaboration patterns, and generates actionable insights.
-
-### 14. content_strategy_planning
-
-**Purpose**: Develop comprehensive content strategies aligned with business goals
-
-**Parameters**:
-
-- `spaceId` (required): The GitBook space ID for strategy planning
-- `strategyFocus` (required): Strategy focus - "growth", "maintenance", "restructure", or "user-experience"
-- `businessGoals` (optional): Business objectives to align with
+**Related MCP Tools**: `get_space`, `get_page_by_path`, `get_file`, `list_organizations`, `list_spaces`
 
 **Example Usage**:
-
 ```
-Use the content_strategy_planning prompt with:
+Use the troubleshooting_assistant prompt with:
 - spaceId: "abc123"
-- strategyFocus: "growth"
-- businessGoals: "increase user adoption and reduce support tickets"
+- issueType: "sync"
+- description: "Git sync failing with authentication errors"
 ```
+
+**What it does**: Diagnoses issues by examining relevant data, identifies potential causes, checks system status and configuration, provides step-by-step troubleshooting, suggests preventive measures, and documents resolution processes.
+
+## MCP Tool to Prompt Mapping
+
+This section shows which prompts work best with each MCP tool:
+
+### Core Content Reading Tools
+- **list_organizations** → `documentation_summary`, `troubleshooting_assistant`
+- **list_spaces** → `documentation_summary`, `analyze_content_gaps`
+- **get_space** → `content_audit`, `documentation_summary`, `troubleshooting_assistant`
+- **get_space_content** → `fetch_documentation`, `analyze_content_gaps`, `content_audit`, `documentation_summary`
+
+### Page Content Tools  
+- **get_page_content** → `fetch_documentation`, `content_optimization`, `content_audit`
+- **get_page_by_path** → `fetch_documentation`, `troubleshooting_assistant`
+- **search_content** → `fetch_documentation`, `analyze_content_gaps`, `content_optimization`
+
+### File Management Tools
+- **get_space_files** → `content_audit`, `content_optimization`
+- **get_file** → `troubleshooting_assistant`, `content_audit`
+
+### Collection Tools
+- **list_collections** → `documentation_summary`
+- **get_collection** → `content_audit`, `documentation_summary`
+- **get_collection_spaces** → `analyze_content_gaps`, `documentation_summary`
+
+## Best Practices for Using Prompts
+
+### 1. Start with Discovery
+Use `documentation_summary` to understand the scope and structure before diving into specific analysis.
+
+### 2. Use Progressive Analysis
+Follow this workflow:
+1. `documentation_summary` - Understand what you're working with
+2. `analyze_content_gaps` - Identify what's missing
+3. `content_audit` - Assess quality of existing content
+4. `content_optimization` - Improve specific areas
+5. `troubleshooting_assistant` - Resolve any issues
+
+### 3. Combine Prompts for Complex Workflows
+Many prompts work well together:
+- Use `content_audit` to identify issues
+- Use `analyze_content_gaps` to find missing content  
+- Use `content_optimization` to improve specific pages
+- Use `troubleshooting_assistant` for technical problems
+
+### 4. Leverage Tool Synergy
+The prompts are designed to work with multiple MCP tools:
+- Start with overview tools (`get_space_content`, `list_spaces`)
+- Drill down with specific tools (`get_page_content`, `search_content`)
+- Use supporting tools as needed (`get_space_files`, `get_file`)
+
+### 5. Customize Parameters
+Take advantage of optional parameters to tailor prompts to your specific needs and contexts.
+
+## Integration with Claude Desktop
+
+When using these prompts with Claude Desktop and the GitBook MCP server:
+
+1. **Be Specific**: Provide clear, specific parameters to get the best results
+2. **Use Context**: Reference previous conversations and results when chaining prompts
+3. **Iterate**: Use the analysis results to refine your approach and parameters
+4. **Document**: Keep track of successful prompt combinations for your specific use cases
+
+## Common Workflow Examples
+
+### Complete Documentation Review
+1. `documentation_summary` with `summaryType: "overview"`
+2. `analyze_content_gaps` to identify missing content
+3. `content_audit` to assess quality issues
+4. `content_optimization` for specific improvements
+
+### Troubleshooting Content Issues
+1. `troubleshooting_assistant` with specific issue description
+2. `fetch_documentation` to understand related content
+3. `content_audit` to identify broader issues
+4. `content_optimization` to implement fixes
+
+### Topic-Focused Analysis
+1. `fetch_documentation` with your specific topic
+2. `analyze_content_gaps` for that topic area  
+3. `content_optimization` to improve found content
+4. `documentation_summary` to see the broader context
+
+## Support and Troubleshooting
+
+If you encounter issues with prompts:
+
+1. Use the `troubleshooting_assistant` prompt for technical issues
+2. Check that your GitBook API token has appropriate permissions
+3. Verify that space IDs are correct and accessible
+4. Review the prompt parameters and adjust as needed
+5. Ensure you have the required MCP tools available
+
+For complex workflows, consider breaking them down into smaller steps using multiple prompts in sequence.
 
 **What it does**: Analyzes current performance, assesses gaps and opportunities, develops strategic recommendations, creates improvement roadmaps, defines success metrics, and establishes governance procedures.
 
