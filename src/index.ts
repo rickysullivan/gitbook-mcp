@@ -571,25 +571,43 @@ const server = new McpServer(
 );
 
 // Core Content Reading Tools
-server.tool("list_organizations", {}, async () => {
-  const organizations = await gitbookClient.getOrganizations();
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify(organizations, null, 2),
-      },
-    ],
-  };
-});
+server.tool(
+  "list_organizations",
+  "List all GitBook organizations accessible with the current API token",
+  {},
+  {
+    title: "List Organizations",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
+  async () => {
+    const organizations = await gitbookClient.getOrganizations();
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(organizations, null, 2),
+        },
+      ],
+    };
+  }
+);
 
 server.tool(
   "list_spaces",
+  "List all spaces in a GitBook organization, optionally filtered by organization ID",
   {
     organizationId: z
       .string()
       .optional()
       .describe("Organization ID to filter spaces by"),
+  },
+  {
+    title: "List Spaces",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ organizationId }) => {
     const spaces = await gitbookClient.getSpaces(organizationId);
@@ -606,7 +624,16 @@ server.tool(
 
 server.tool(
   "get_space",
-  { spaceId: z.string().describe("The ID of the space to retrieve") },
+  "Get detailed information about a specific GitBook space",
+  {
+    spaceId: z.string().describe("The ID of the space to retrieve"),
+  },
+  {
+    title: "Get Space Details",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
   async ({ spaceId }) => {
     const space = await gitbookClient.getSpace(spaceId);
     return {
@@ -622,6 +649,7 @@ server.tool(
 
 server.tool(
   "get_space_content",
+  "Get the complete content structure and page hierarchy of a GitBook space",
   {
     spaceId: z
       .string()
@@ -629,6 +657,12 @@ server.tool(
       .describe(
         "The ID of the space to get content from (uses default space if not provided)"
       ),
+  },
+  {
+    title: "Get Space Content",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ spaceId }) => {
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
@@ -646,6 +680,7 @@ server.tool(
 
 server.tool(
   "get_page_content",
+  "Retrieve the content of a specific page from a GitBook space, with options for format and metadata",
   {
     spaceId: z
       .string()
@@ -666,6 +701,12 @@ server.tool(
       .boolean()
       .optional()
       .describe("Whether to include computed revision data"),
+  },
+  {
+    title: "Get Page Content",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ spaceId, pageId, format, metadata, computed }) => {
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
@@ -694,6 +735,7 @@ server.tool(
 
 server.tool(
   "get_page_by_path",
+  "Retrieve a page from a GitBook space using its path instead of page ID",
   {
     spaceId: z
       .string()
@@ -702,6 +744,12 @@ server.tool(
         "The ID of the space containing the page (uses default space if not provided)"
       ),
     pagePath: z.string().describe("The path of the page to retrieve"),
+  },
+  {
+    title: "Get Page by Path",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ spaceId, pagePath }) => {
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
@@ -722,6 +770,7 @@ server.tool(
 
 server.tool(
   "search_content",
+  "Search for content within a GitBook space using a text query",
   {
     spaceId: z
       .string()
@@ -730,6 +779,12 @@ server.tool(
         "The ID of the space to search in (uses default space if not provided)"
       ),
     query: z.string().describe("The search query"),
+  },
+  {
+    title: "Search Content",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ spaceId, query }) => {
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
@@ -750,6 +805,7 @@ server.tool(
 
 server.tool(
   "get_space_files",
+  "List all files (images, documents, etc.) uploaded to a GitBook space",
   {
     spaceId: z
       .string()
@@ -757,6 +813,12 @@ server.tool(
       .describe(
         "The ID of the space to get files from (uses default space if not provided)"
       ),
+  },
+  {
+    title: "Get Space Files",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ spaceId }) => {
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
@@ -774,6 +836,7 @@ server.tool(
 
 server.tool(
   "get_file",
+  "Get detailed information about a specific file uploaded to a GitBook space",
   {
     spaceId: z
       .string()
@@ -782,6 +845,12 @@ server.tool(
         "The ID of the space containing the file (uses default space if not provided)"
       ),
     fileId: z.string().describe("The ID of the file to retrieve"),
+  },
+  {
+    title: "Get File Details",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ spaceId, fileId }) => {
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
@@ -800,6 +869,7 @@ server.tool(
 // Collection Tools
 server.tool(
   "list_collections",
+  "List all collections in a GitBook organization, optionally filtered by organization ID",
   {
     organizationId: z
       .string()
@@ -807,6 +877,12 @@ server.tool(
       .describe(
         "Organization ID to filter collections by (uses default organization if not provided)"
       ),
+  },
+  {
+    title: "List Collections",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ organizationId }) => {
     const effectiveOrgId = gitbookClient.resolveOrganizationId(organizationId);
@@ -824,7 +900,16 @@ server.tool(
 
 server.tool(
   "get_collection",
-  { collectionId: z.string().describe("The ID of the collection to retrieve") },
+  "Get detailed information about a specific GitBook collection",
+  {
+    collectionId: z.string().describe("The ID of the collection to retrieve"),
+  },
+  {
+    title: "Get Collection Details",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
+  },
   async ({ collectionId }) => {
     const collection = await gitbookClient.getCollection(collectionId);
     return {
@@ -840,10 +925,17 @@ server.tool(
 
 server.tool(
   "get_collection_spaces",
+  "List all spaces that belong to a specific GitBook collection",
   {
     collectionId: z
       .string()
       .describe("The ID of the collection to get spaces from"),
+  },
+  {
+    title: "Get Collection Spaces",
+    readOnlyHint: true,
+    idempotentHint: true,
+    openWorldHint: true,
   },
   async ({ collectionId }) => {
     const spaces = await gitbookClient.getCollectionSpaces(collectionId);
