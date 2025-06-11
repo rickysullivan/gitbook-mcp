@@ -6,6 +6,83 @@ A Model Context Protocol (MCP) server that provides access to GitBook's API for 
 
 The GitBook MCP server enables programmatic access to GitBook organizations, spaces, collections, and content through a standardized MCP interface. It provides 12 tools for content operations and 6 AI-powered prompts for documentation workflows.
 
+## Quick Setup
+
+### Prerequisites
+- GitBook API token (obtain from https://app.gitbook.com/account/developer)
+- Your GitBook organization ID (optional but recommended)
+
+### IDE and AI Assistant Integration
+
+#### VS Code (with GitHub Copilot)
+Add to your VS Code MCP settings:
+
+```json
+{
+  "servers": {
+    "gitbook-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["gitbook-mcp", "--organization-id=your_organization_id_here"],
+      "env": {
+        "GITBOOK_API_TOKEN": "gb_api_your_token_here"
+      }
+    }
+  }
+}
+```
+
+#### Claude Desktop
+Add to your Claude Desktop configuration (`~/AppData/Roaming/Claude/claude_desktop_config.json` on Windows or `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "globalShortcut": "Alt+C",
+  "mcpServers": {
+    "gitbook-mcp": {
+      "command": "npx",
+      "args": ["gitbook-mcp", "--organization-id=your_organization_id"],
+      "env": {
+        "GITBOOK_API_TOKEN": "gb_api_your_token_here"
+      }
+    }
+  }
+}
+```
+
+#### IntelliJ IDEA / WebStorm / JetBrains IDEs
+Add to your JetBrains IDE MCP settings:
+
+```json
+{
+  "servers": {
+    "gitbook-mcp": {
+      "command": "npx",
+      "args": [
+        "gitbook-mcp",
+        "--organization-id=your_organization_id_here"
+      ],
+      "env": {
+        "GITBOOK_API_KEY": "gb_api_your_token_here"
+      }
+    }
+  }
+}
+```
+
+### Getting Your GitBook Credentials
+
+1. **API Token**: Visit https://app.gitbook.com/account/developer to generate your API token
+2. **Organization ID**: Use the `list_organizations` tool after setup to find your organization ID
+3. **Space ID** (optional): Use the `list_spaces` tool to find specific space IDs
+
+### Configuration Options
+
+You can configure the server using:
+- **CLI arguments** (as shown above): `--organization-id`, `--space-id`
+- **Environment variables**: `GITBOOK_API_TOKEN`, `GITBOOK_ORGANIZATION_ID`, `GITBOOK_SPACE_ID`
+- **Configuration files**: `.env.local`, `.cursorrules`, etc.
+
 ## API Reference
 
 ### Tools
