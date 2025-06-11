@@ -406,7 +406,7 @@ class GitBookAPIClient {
     if (!response.ok) {
       let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
       try {
-        const errorData: GitBookErrorResponse = await response.json();
+        const errorData = await response.json() as GitBookErrorResponse;
         errorMessage = errorData.error?.message || errorMessage;
       } catch (e) {
         // If we can't parse the error response, use the basic error message
@@ -414,7 +414,7 @@ class GitBookAPIClient {
       throw new Error(errorMessage);
     }
 
-    return response.json();
+    return response.json() as Promise<T>;
   }
 
   // Organization operations
