@@ -23,7 +23,7 @@ function findProjectRoot(startDir: string): string {
     }
     currentDir = dirname(currentDir);
   }
-  // Fallback to parent of build directory
+  // Fallback to parent of dist directory
   return join(__dirname, '..');
 }
 
