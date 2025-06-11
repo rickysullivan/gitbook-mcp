@@ -85,9 +85,11 @@ Add to your JetBrains AI Assistant MCP configuration (see [official docs](https:
 ### Configuration Options
 
 You can configure the server using:
-- **CLI arguments** (as shown above): `--organization-id`, `--space-id`
-- **Environment variables**: `GITBOOK_API_TOKEN`, `GITBOOK_ORGANIZATION_ID`, `GITBOOK_SPACE_ID`
-- **Configuration files**: `.env.local` or `.env`.
+- **CLI arguments**: `--organization-id`, `--space-id`
+- **Environment variables in MCP config**: Set via the `env` object in your MCP configuration
+- **System environment variables**: `GITBOOK_API_TOKEN`, `GITBOOK_ORGANIZATION_ID`, `GITBOOK_SPACE_ID`
+
+**Note**: `.env` files are only supported when running the server locally for development, not when using `npx gitbook-mcp`.
 
 ## API Reference
 
@@ -499,7 +501,7 @@ git clone https://github.com/rickysullivan/gitbook-mcp.git
 cd gitbook-mcp
 npm install
 npm run setup
-# Add your GITBOOK_API_TOKEN to .env.local
+# Add your GITBOOK_API_TOKEN to .env.local (for local development only)
 ```
 
 ### Development
