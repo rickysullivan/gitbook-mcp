@@ -1,12 +1,9 @@
 # Dependencies
 node_modules/
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Build output
 build/
-dist/
 
 # Environment variables
 .env
@@ -57,3 +54,5 @@ jspm_packages/
 
 # Yarn Integrity file
 .yarn-integrity
+
+.github/
