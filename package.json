@@ -5,12 +5,12 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx --watch src/index.ts",
+    "dev": "tsc --watch -p tsconfig.json",
     "build": "tsc && chmod 755 dist/index.js",
     "inspect": "npm run build && mcp-inspector node dist/index.js",
     "start": "node dist/index.js",
     "test": "tsc --noEmit",
-    "setup": "cp .env.local .env.local && echo '✅ Created .env.local - now edit it with your GitBook API token'"
+    "setup": "cp .env.example .env.local && echo '✅ Created .env.local - now edit it with your GitBook API token'"
   },
   "bin": {
     "gitbook-mcp": "./dist/index.js"
