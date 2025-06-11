@@ -4,17 +4,21 @@ A Model Context Protocol (MCP) server that provides access to GitBook's API for 
 
 ## Overview
 
-The GitBook MCP server enables programmatic access to GitBook organizations, spaces, collections, and content through a standardized MCP interface. It provides 12 tools for content operations and 2 AI-powered prompts for documentation workflows.
+The GitBook MCP server enables programmatic access to GitBook organizations, spaces, collections, and content through a standardized MCP interface. It provides 12 tools for content operations and 6 AI-powered prompts for documentation workflows.
 
 ## API Reference
 
 ### Tools
 
-The GitBook MCP server provides 12 tools organized into functional categories:
+The GitBook MCP server provides 12 tools organized into functional categories. Each tool includes behavioral hints:
+
+- 📖 **Read-only**: Tool only reads data and doesn't modify anything
+- 🔄 **Idempotent**: Tool can be called multiple times safely with the same result  
+- 🌐 **Open-world**: Tool may return data not explicitly mentioned in its description
 
 #### Organization Discovery
 
-##### `list_organizations`
+##### List Organizations (`list_organizations`) 📖 🔄 🌐
 Lists all accessible GitBook organizations.
 
 **Parameters:** None
@@ -37,7 +41,7 @@ Lists all accessible GitBook organizations.
 
 #### Space Management
 
-##### `list_spaces`
+##### List Spaces (`list_spaces`) 📖 🔄 🌐
 Lists spaces, optionally filtered by organization.
 
 **Parameters:**
@@ -60,7 +64,7 @@ Lists spaces, optionally filtered by organization.
 }
 ```
 
-##### `get_space`
+##### Get Space Details (`get_space`) 📖 🔄 🌐
 Retrieves detailed information about a specific space.
 
 **Parameters:**
@@ -80,7 +84,7 @@ Retrieves detailed information about a specific space.
 }
 ```
 
-##### `get_space_content`
+##### Get Space Content (`get_space_content`) 📖 🔄 🌐
 Retrieves the content structure and pages of a space.
 
 **Parameters:**
@@ -100,7 +104,7 @@ Retrieves the content structure and pages of a space.
 }
 ```
 
-##### `search_content`
+##### Search Content (`search_content`) 📖 🔄 🌐
 Searches for content within a space using full-text search.
 
 **Parameters:**
@@ -123,7 +127,7 @@ Searches for content within a space using full-text search.
 
 #### Content Retrieval
 
-##### `get_page_content`
+##### Get Page Content (`get_page_content`) 📖 🔄 🌐
 Retrieves the content of a specific page.
 
 **Parameters:**
@@ -143,7 +147,7 @@ Retrieves the content of a specific page.
 }
 ```
 
-##### `get_page_by_path`
+##### Get Page by Path (`get_page_by_path`) 📖 🔄 🌐
 Retrieves page content using the page path.
 
 **Parameters:**
@@ -162,7 +166,7 @@ Retrieves page content using the page path.
 
 #### File Management
 
-##### `get_space_files`
+##### Get Space Files (`get_space_files`) 📖 🔄 🌐
 Lists all files in a space.
 
 **Parameters:**
@@ -182,7 +186,7 @@ Lists all files in a space.
 }
 ```
 
-##### `get_file`
+##### Get File Details (`get_file`) 📖 🔄 🌐
 Retrieves details of a specific file.
 
 **Parameters:**
@@ -202,7 +206,7 @@ Retrieves details of a specific file.
 
 #### Collection Management
 
-##### `list_collections`
+##### List Collections (`list_collections`) 📖 🔄 🌐
 Lists all accessible collections.
 
 **Parameters:**
@@ -221,7 +225,7 @@ Lists all accessible collections.
 }
 ```
 
-##### `get_collection`
+##### Get Collection Details (`get_collection`) 📖 🔄 🌐
 Retrieves details of a specific collection.
 
 **Parameters:**
@@ -237,7 +241,7 @@ Retrieves details of a specific collection.
 }
 ```
 
-##### `get_collection_spaces`
+##### Get Collection Spaces (`get_collection_spaces`) 📖 🔄 🌐
 Lists all spaces within a collection.
 
 **Parameters:**
@@ -258,14 +262,15 @@ Lists all spaces within a collection.
 
 ### Prompts
 
-The GitBook MCP server provides 2 AI-powered prompts for documentation workflows:
+The GitBook MCP server provides 6 AI-powered prompts for documentation workflows:
 
-#### `fetch_documentation`
+#### Fetch Documentation (`fetch_documentation`)
 Fetches and analyzes GitBook documentation content for specific topics.
 
 **Parameters:**
 - `topic` (required): The topic or subject to search for and analyze
 - `spaceId` (optional): The ID of the space to search (uses default if configured)
+- `includeStructure` (optional): Set to "true" to include space structure
 
 **Returns:**
 A comprehensive analysis of documentation related to the specified topic, including:
@@ -273,18 +278,72 @@ A comprehensive analysis of documentation related to the specified topic, includ
 - Content summaries
 - Gaps or areas needing improvement
 
-#### `analyze_content_structure`
-Analyzes the content structure and organization of a GitBook space.
+#### Analyze Content Gaps (`analyze_content_gaps`)
+Identifies gaps and missing content in documentation.
 
 **Parameters:**
 - `spaceId` (optional): The ID of the space to analyze (uses default if configured)
+- `comparisonSource` (optional): Source to compare against (default: "internal analysis")
 
 **Returns:**
-A detailed analysis of the space's content structure, including:
-- Navigation hierarchy
-- Content organization patterns
-- Recommendations for improvement
-- Accessibility and user experience insights
+A detailed gap analysis including:
+- Missing topics and incomplete sections
+- Coverage gaps prioritized by importance
+- Suggestions for new content areas
+
+#### Content Audit (`content_audit`)
+Performs quality audits of documentation content.
+
+**Parameters:**
+- `spaceId` (optional): The ID of the space to audit (uses default if configured)
+- `auditCriteria` (optional): Specific criteria to audit (default: "general quality and consistency")
+
+**Returns:**
+A comprehensive quality assessment including:
+- Content quality and consistency review
+- Outdated information identification
+- Writing style and formatting recommendations
+
+#### Documentation Summary (`documentation_summary`)
+Generates comprehensive summaries of GitBook spaces.
+
+**Parameters:**
+- `spaceId` (optional): The ID of the space to summarize (uses default if configured)
+- `summaryType` (optional): Type of summary - "overview", "technical", "user-guide", or "custom" (default: "overview")
+
+**Returns:**
+A structured summary including:
+- Space structure and content organization
+- Main topics and themes
+- Target audience and use cases
+
+#### Content Optimization (`content_optimization`)
+Optimizes content for SEO, readability, structure, or performance.
+
+**Parameters:**
+- `spaceId` (optional): The ID of the space to optimize (uses default if configured)
+- `optimizationType` (required): Type of optimization - "SEO", "readability", "structure", or "performance"
+- `targetMetrics` (optional): Specific metrics or goals to optimize for
+
+**Returns:**
+Optimization recommendations including:
+- Specific improvement strategies
+- Priority-ranked optimization opportunities
+- Implementation guidance
+
+#### Troubleshooting Assistant (`troubleshooting_assistant`)
+Diagnoses and resolves access, sync, content, and integration issues.
+
+**Parameters:**
+- `spaceId` (optional): The ID of the space experiencing issues (uses default if configured)
+- `issueType` (required): Type of issue - "access", "sync", "content", "integration", or "performance"
+- `description` (optional): Description of the specific problem
+
+**Returns:**
+Troubleshooting guidance including:
+- Issue diagnosis and root cause analysis
+- Step-by-step resolution procedures
+- Preventive measures and best practices
 
 ## Configuration Reference
 
