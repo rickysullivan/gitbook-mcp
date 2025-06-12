@@ -416,20 +416,6 @@ Optimization recommendations including:
 - Priority-ranked optimization opportunities
 - Implementation guidance
 
-#### Troubleshooting Assistant (`troubleshooting_assistant`)
-Diagnoses and resolves access, sync, content, and integration issues.
-
-**Parameters:**
-- `spaceId` (optional): The ID of the space experiencing issues (uses default if configured)
-- `issueType` (required): Type of issue - "access", "sync", "content", "integration", or "performance"
-- `description` (optional): Description of the specific problem
-
-**Returns:**
-Troubleshooting guidance including:
-- Issue diagnosis and root cause analysis
-- Step-by-step resolution procedures
-- Preventive measures and best practices
-
 ## Configuration Reference
 
 The GitBook MCP server supports multiple configuration methods with the following precedence (highest to lowest):
