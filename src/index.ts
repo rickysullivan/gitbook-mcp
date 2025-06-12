@@ -1276,59 +1276,6 @@ Start by using get_space_content to understand the structure, then analyze indiv
   }
 );
 
-server.prompt(
-  "troubleshooting_assistant",
-  "Diagnose and resolve access, sync, content, and integration issues",
-  {
-    spaceId: z
-      .string()
-      .optional()
-      .describe(
-        "The GitBook space ID experiencing issues (uses default space if not provided)"
-      ),
-    issueType: z
-      .string()
-      .describe("Type of issue: access, sync, content, integration, or performance"),
-    description: z
-      .string()
-      .optional()
-      .describe("Description of the specific problem"),
-  },
-  (args) => {
-    const { spaceId, issueType, description } = args;
-    const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
-
-    const promptText = `I need help troubleshooting a GitBook issue.
-
-**Space ID**: ${effectiveSpaceId}
-**Issue Type**: ${issueType}
-**Description**: ${description || "Not specified"}
-
-Please help me:
-1. Diagnose the issue by examining relevant data and configuration
-2. Identify potential causes and contributing factors
-3. Check system status, permissions, and configuration
-4. Provide step-by-step troubleshooting procedures
-5. Suggest preventive measures to avoid similar issues
-6. Document the resolution process for future reference
-
-Start by using appropriate tools to gather information about the ${issueType} issue. Use get_space, get_space_content, and other relevant tools to understand the current state and identify problems.`;
-
-    return {
-      description: `Troubleshoot ${issueType} issue in GitBook space`,
-      messages: [
-        {
-          role: "user",
-          content: {
-            type: "text",
-            text: promptText,
-          },
-        },
-      ],
-    };
-  }
-);
-
 // Start the server
 async function main() {
   const transport = new StdioServerTransport();
