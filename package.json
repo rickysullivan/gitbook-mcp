@@ -1,53 +1,54 @@
 {
-  "name": "gitbook-mcp",
-  "version": "1.0.0",
-  "description": "GitBook Model Context Protocol server - read and search GitBook documentation with AI assistants",
-  "main": "dist/index.js",
-  "type": "module",
-  "scripts": {
-    "dev": "tsc --watch -p tsconfig.json",
-    "build": "tsc && chmod 755 dist/index.js",
-    "inspect": "npm run build && mcp-inspector node dist/index.js",
-    "start": "node dist/index.js",
-    "test": "tsc --noEmit",
-    "setup": "cp .env.example .env.local && echo '✅ Created .env.local - now edit it with your GitBook API token'"
-  },
-  "bin": {
-    "gitbook-mcp": "./dist/index.js"
-  },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "gitbook",
-    "documentation",
-    "ai",
-    "claude",
-    "copilot"
-  ],
-  "author": "Ricky Sullivan",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rickysullivan/gitbook-mcp"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1",
-    "dotenv": "^16.5.0",
-    "yargs": "^17.7.2",
-    "zod": "^3.25.32"
-  },
-  "devDependencies": {
-    "@modelcontextprotocol/inspector": "^0.14.0",
-    "@types/node": "^22.15.23",
-    "@types/yargs": "^17.0.33",
-    "prettier": "^3.5.3",
-    "tsx": "^4.20.1",
-    "typescript": "^5.8.3"
-  }
+    "name": "gitbook-mcp",
+    "version": "1.0.0",
+    "description": "GitBook Model Context Protocol server - read and search GitBook documentation with AI assistants",
+    "main": "dist/index.js",
+    "type": "module",
+    "scripts": {
+        "dev": "tsc --watch -p tsconfig.json",
+        "build": "tsc && chmod 755 dist/index.js",
+        "inspect": "npm run build && mcp-inspector node dist/index.js",
+        "start": "node dist/index.js",
+        "test": "tsc --noEmit",
+        "setup": "cp .env.example .env.local && echo '✅ Created .env.local - now edit it with your GitBook API token'"
+    },
+    "bin": {
+        "gitbook-mcp": "./dist/index.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "gitbook",
+        "documentation",
+        "ai",
+        "claude",
+        "copilot"
+    ],
+    "author": "Ricky Sullivan",
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rickysullivan/gitbook-mcp"
+    },
+    "homepage": "https://rickysullivan.gitbook.io/gitbook-mcp",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.12.1",
+        "dotenv": "^16.5.0",
+        "yargs": "^17.7.2",
+        "zod": "^3.25.32"
+    },
+    "devDependencies": {
+        "@modelcontextprotocol/inspector": "^0.14.0",
+        "@types/node": "^22.15.23",
+        "@types/yargs": "^17.0.33",
+        "prettier": "^3.5.3",
+        "tsx": "^4.20.1",
+        "typescript": "^5.8.3"
+    }
 }
