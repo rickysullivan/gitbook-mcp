@@ -118,7 +118,7 @@ for (const envFile of envFiles) {
     if (result.error) {
       sendLogMessage(
         "warn",
-        `⚠️  Warning: Error loading ${envFile}: ${result.error.message}`
+        `⚠️  Warning: Error loading ${envFile}: ${result.error.message}`,
       );
     } else {
       sendLogMessage("info", `✅ Loaded environment from: "${envFile}"`);
@@ -133,7 +133,7 @@ for (const envFile of envFiles) {
 if (!envLoaded) {
   sendLogMessage(
     "warn",
-    `📁 No environment files found. Checked: ${envFiles.join(", ")}`
+    `📁 No environment files found. Checked: ${envFiles.join(", ")}`,
   );
 }
 
@@ -302,7 +302,7 @@ class GitBookAPIClient {
     options?: {
       organizationId?: string;
       defaultSpaceId?: string;
-    }
+    },
   ) {
     this.apiToken = apiToken;
     this.organizationId = options?.organizationId;
@@ -324,7 +324,7 @@ class GitBookAPIClient {
     const effectiveSpaceId = explicitSpaceId || this.getDefaultSpaceId();
     if (!effectiveSpaceId) {
       throw new Error(
-        "No space ID provided and no default space configured. Please provide spaceId, use --space-id CLI argument, or add space-id to your configuration file."
+        "No space ID provided and no default space configured. Please provide spaceId, use --space-id CLI argument, or add space-id to your configuration file.",
       );
     }
     return effectiveSpaceId;
@@ -334,7 +334,7 @@ class GitBookAPIClient {
     const effectiveOrgId = explicitOrgId || this.getDefaultOrganizationId();
     if (!effectiveOrgId) {
       throw new Error(
-        "No organization ID provided and no default organization configured. Please provide organizationId, use --organization-id CLI argument, or add organization-id to your configuration file."
+        "No organization ID provided and no default organization configured. Please provide organizationId, use --organization-id CLI argument, or add organization-id to your configuration file.",
       );
     }
     return effectiveOrgId;
@@ -346,7 +346,7 @@ class GitBookAPIClient {
       method?: string;
       body?: any;
       headers?: Record<string, string>;
-    }
+    },
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
@@ -378,7 +378,7 @@ class GitBookAPIClient {
   // Organization operations
   async getOrganizations(): Promise<GitBookOrganization[]> {
     const response = await this.makeRequest<{ items: GitBookOrganization[] }>(
-      "/orgs"
+      "/orgs",
     );
     return response.items;
   }
@@ -388,11 +388,11 @@ class GitBookAPIClient {
     const orgId = organizationId || this.organizationId;
     if (!orgId) {
       throw new Error(
-        "Organization ID is required to list spaces. Provide it via parameter or environment variable."
+        "Organization ID is required to list spaces. Provide it via parameter or environment variable.",
       );
     }
     const response = await this.makeRequest<{ items: GitBookSpace[] }>(
-      `/orgs/${orgId}/spaces`
+      `/orgs/${orgId}/spaces`,
     );
     return response.items;
   }
@@ -413,7 +413,7 @@ class GitBookAPIClient {
       format?: "document" | "markdown";
       metadata?: boolean;
       computed?: boolean;
-    }
+    },
   ): Promise<any> {
     let endpoint = `/spaces/${spaceId}/content/page/${pageId}`;
     const params = new URLSearchParams();
@@ -434,7 +434,7 @@ class GitBookAPIClient {
   async getPageByPath(spaceId: string, pagePath: string): Promise<any> {
     const encodedPath = encodeURIComponent(pagePath);
     return this.makeRequest<any>(
-      `/spaces/${spaceId}/content/path/${encodedPath}`
+      `/spaces/${spaceId}/content/path/${encodedPath}`,
     );
   }
 
@@ -442,14 +442,14 @@ class GitBookAPIClient {
   async searchContent(spaceId: string, query: string): Promise<any> {
     const params = new URLSearchParams({ query });
     return this.makeRequest<any>(
-      `/spaces/${spaceId}/search?${params.toString()}`
+      `/spaces/${spaceId}/search?${params.toString()}`,
     );
   }
 
   // File operations
   async getSpaceFiles(spaceId: string): Promise<GitBookFile[]> {
     const response = await this.makeRequest<{ items: GitBookFile[] }>(
-      `/spaces/${spaceId}/files`
+      `/spaces/${spaceId}/files`,
     );
     return response.items;
   }
@@ -463,11 +463,11 @@ class GitBookAPIClient {
     const orgId = organizationId || this.organizationId;
     if (!orgId) {
       throw new Error(
-        "Organization ID is required to list collections. Provide it via parameter or environment variable."
+        "Organization ID is required to list collections. Provide it via parameter or environment variable.",
       );
     }
     const response = await this.makeRequest<{ items: GitBookCollection[] }>(
-      `/orgs/${orgId}/collections`
+      `/orgs/${orgId}/collections`,
     );
     return response.items;
   }
@@ -478,7 +478,7 @@ class GitBookAPIClient {
 
   async getCollectionSpaces(collectionId: string): Promise<GitBookSpace[]> {
     const response = await this.makeRequest<{ items: GitBookSpace[] }>(
-      `/collections/${collectionId}/spaces`
+      `/collections/${collectionId}/spaces`,
     );
     return response.items;
   }
@@ -493,16 +493,16 @@ const defaultSpaceId = resolvedConfig.spaceId;
 if (!apiToken) {
   sendLogMessage(
     "error",
-    "❌ GITBOOK_API_TOKEN environment variable is required"
+    "❌ GITBOOK_API_TOKEN environment variable is required",
   );
   sendLogMessage(
     "error",
-    "💡 Please set your GitBook API token in your .env file"
+    "💡 Please set your GitBook API token in your .env file",
   );
   sendLogMessage("error", "💡 Example: GITBOOK_API_TOKEN=your_token_here");
   sendLogMessage(
     "error",
-    "💡 Get your token from: https://app.gitbook.com/account/developer"
+    "💡 Get your token from: https://app.gitbook.com/account/developer",
   );
 
   sendLogMessage("info", "\n📋 Configuration Summary:");
@@ -512,22 +512,22 @@ if (!apiToken) {
       : "environment variable";
     sendLogMessage(
       "info",
-      `💡 Organization ID: ${organizationId} (from ${source})`
+      `💡 Organization ID: ${organizationId} (from ${source})`,
     );
   } else {
     sendLogMessage("info", "💡 No Organization ID configured");
     sendLogMessage("info", "   • Use --organization-id CLI argument");
     sendLogMessage(
       "info",
-      '   • Add "organization-id: your-org-id" to .github/copilot-instructions.md'
+      '   • Add "organization-id: your-org-id" to .github/copilot-instructions.md',
     );
     sendLogMessage(
       "info",
-      "   • Set GITBOOK_ORGANIZATION_ID environment variable"
+      "   • Set GITBOOK_ORGANIZATION_ID environment variable",
     );
     sendLogMessage(
       "info",
-      "   • Use list_organizations tool to find your org ID"
+      "   • Use list_organizations tool to find your org ID",
     );
   }
 
@@ -535,14 +535,14 @@ if (!apiToken) {
     const source = argv.spaceId ? "CLI argument" : "environment variable";
     sendLogMessage(
       "info",
-      `💡 Default Space ID: ${defaultSpaceId} (from ${source})`
+      `💡 Default Space ID: ${defaultSpaceId} (from ${source})`,
     );
   } else {
     sendLogMessage("info", "💡 No default Space ID configured");
     sendLogMessage("info", "   • Use --space-id CLI argument");
     sendLogMessage(
       "info",
-      '   • Add "space-id: your-space-id" to .github/copilot-instructions.md'
+      '   • Add "space-id: your-space-id" to .github/copilot-instructions.md',
     );
     sendLogMessage("info", "   • Set GITBOOK_SPACE_ID environment variable");
   }
@@ -567,7 +567,7 @@ const server = new McpServer(
       tools: {},
       prompts: {},
     },
-  }
+  },
 );
 
 // Core Content Reading Tools
@@ -591,7 +591,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -619,7 +619,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -644,7 +644,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -655,7 +655,7 @@ server.tool(
       .string()
       .optional()
       .describe(
-        "The ID of the space to get content from (uses default space if not provided)"
+        "The ID of the space to get content from (uses default space if not provided)",
       ),
   },
   {
@@ -675,7 +675,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -686,7 +686,7 @@ server.tool(
       .string()
       .optional()
       .describe(
-        "The ID of the space containing the page (uses default space if not provided)"
+        "The ID of the space containing the page (uses default space if not provided)",
       ),
     pageId: z.string().describe("The ID of the page to retrieve content from"),
     format: z
@@ -719,7 +719,7 @@ server.tool(
     const pageContent = await gitbookClient.getPageContent(
       effectiveSpaceId,
       pageId,
-      Object.keys(options).length > 0 ? options : undefined
+      Object.keys(options).length > 0 ? options : undefined,
     );
 
     return {
@@ -730,7 +730,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -741,7 +741,7 @@ server.tool(
       .string()
       .optional()
       .describe(
-        "The ID of the space containing the page (uses default space if not provided)"
+        "The ID of the space containing the page (uses default space if not provided)",
       ),
     pagePath: z.string().describe("The path of the page to retrieve"),
   },
@@ -755,7 +755,7 @@ server.tool(
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
     const pageContent = await gitbookClient.getPageByPath(
       effectiveSpaceId,
-      pagePath
+      pagePath,
     );
     return {
       content: [
@@ -765,7 +765,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -776,7 +776,7 @@ server.tool(
       .string()
       .optional()
       .describe(
-        "The ID of the space to search in (uses default space if not provided)"
+        "The ID of the space to search in (uses default space if not provided)",
       ),
     query: z.string().describe("The search query"),
   },
@@ -790,7 +790,7 @@ server.tool(
     const effectiveSpaceId = gitbookClient.resolveSpaceId(spaceId);
     const searchResults = await gitbookClient.searchContent(
       effectiveSpaceId,
-      query
+      query,
     );
     return {
       content: [
@@ -800,7 +800,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -811,7 +811,7 @@ server.tool(
       .string()
       .optional()
       .describe(
-        "The ID of the space to get files from (uses default space if not provided)"
+        "The ID of the space to get files from (uses default space if not provided)",
       ),
   },
   {
@@ -831,7 +831,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -842,7 +842,7 @@ server.tool(
       .string()
       .optional()
       .describe(
-        "The ID of the space containing the file (uses default space if not provided)"
+        "The ID of the space containing the file (uses default space if not provided)",
       ),
     fileId: z.string().describe("The ID of the file to retrieve"),
   },
@@ -863,7 +863,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 // Collection Tools
@@ -875,7 +875,7 @@ server.tool(
       .string()
       .optional()
       .describe(
-        "Organization ID to filter collections by (uses default organization if not provided)"
+        "Organization ID to filter collections by (uses default organization if not provided)",
       ),
   },
   {
@@ -895,7 +895,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -920,7 +920,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -947,7 +947,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 // Add a resource for the default space if configured
@@ -1010,7 +1010,7 @@ server.resource(
         },
       ],
     };
-  }
+  },
 );
 
 // Add comprehensive prompts for GitBook documentation workflows
@@ -1022,7 +1022,7 @@ server.prompt(
       .string()
       .optional()
       .describe(
-        "The GitBook space ID to search in (uses default space if not provided)"
+        "The GitBook space ID to search in (uses default space if not provided)",
       ),
     topic: z
       .string()
@@ -1031,7 +1031,7 @@ server.prompt(
       .string()
       .optional()
       .describe(
-        'Set to "true" to include the overall space structure in the analysis'
+        'Set to "true" to include the overall space structure in the analysis',
       ),
   },
   (args) => {
@@ -1071,7 +1071,7 @@ Start by using the search_content tool to find relevant pages, then use get_page
         },
       ],
     };
-  }
+  },
 );
 
 server.prompt(
@@ -1082,7 +1082,7 @@ server.prompt(
       .string()
       .optional()
       .describe(
-        "The GitBook space ID to analyze (uses default space if not provided)"
+        "The GitBook space ID to analyze (uses default space if not provided)",
       ),
     comparisonSource: z
       .string()
@@ -1120,7 +1120,7 @@ Start by using get_space_content to understand the current structure, then analy
         },
       ],
     };
-  }
+  },
 );
 
 server.prompt(
@@ -1131,12 +1131,14 @@ server.prompt(
       .string()
       .optional()
       .describe(
-        "The GitBook space ID to audit (uses default space if not provided)"
+        "The GitBook space ID to audit (uses default space if not provided)",
       ),
     auditCriteria: z
       .string()
       .optional()
-      .describe("Specific criteria to audit (default: general quality and consistency)"),
+      .describe(
+        "Specific criteria to audit (default: general quality and consistency)",
+      ),
   },
   (args) => {
     const { spaceId, auditCriteria = "general quality and consistency" } = args;
@@ -1170,7 +1172,7 @@ Start by using get_space_content to understand the structure, then systematicall
         },
       ],
     };
-  }
+  },
 );
 
 server.prompt(
@@ -1181,12 +1183,14 @@ server.prompt(
       .string()
       .optional()
       .describe(
-        "The GitBook space ID to summarize (uses default space if not provided)"
+        "The GitBook space ID to summarize (uses default space if not provided)",
       ),
     summaryType: z
       .string()
       .optional()
-      .describe("Type of summary: overview, technical, user-guide, or custom (default: overview)"),
+      .describe(
+        "Type of summary: overview, technical, user-guide, or custom (default: overview)",
+      ),
   },
   (args) => {
     const { spaceId, summaryType = "overview" } = args;
@@ -1220,7 +1224,7 @@ Start by using get_space_content to understand the overall structure, then selec
         },
       ],
     };
-  }
+  },
 );
 
 server.prompt(
@@ -1231,11 +1235,13 @@ server.prompt(
       .string()
       .optional()
       .describe(
-        "The GitBook space ID to optimize (uses default space if not provided)"
+        "The GitBook space ID to optimize (uses default space if not provided)",
       ),
     optimizationType: z
       .string()
-      .describe("Type of optimization: SEO, readability, structure, or performance"),
+      .describe(
+        "Type of optimization: SEO, readability, structure, or performance",
+      ),
     targetMetrics: z
       .string()
       .optional()
@@ -1273,7 +1279,7 @@ Start by using get_space_content to understand the structure, then analyze indiv
         },
       ],
     };
-  }
+  },
 );
 
 // Start the server
