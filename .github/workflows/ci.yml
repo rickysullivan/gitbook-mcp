@@ -2,9 +2,8 @@ name: CI
 
 on:
     pull_request:
-        branches: [main, develop]
-    push:
-        branches: [main, develop]
+        branches: [main]
+        types: [opened, synchronize, reopened]
 
 jobs:
     test:
@@ -12,7 +11,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [18, 20]
+                node-version: [20]
 
         steps:
             - name: Checkout code
@@ -31,7 +30,7 @@ jobs:
               run: npm test
 
             - name: Check Prettier formatting
-              run: npx prettier --check .
+              run: npm run format:check
 
             - name: Build project
               run: npm run build
