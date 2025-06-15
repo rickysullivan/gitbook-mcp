@@ -1300,6 +1300,119 @@ Start by using get_space_content to understand the structure, then analyze indiv
     },
 );
 
+server.prompt(
+    "setup_development",
+    "Get step-by-step guidance for setting up GitBook MCP server development environment",
+    {
+        platform: z
+            .string()
+            .optional()
+            .describe(
+                'Your operating system: Type "1" for Windows, "2" for macOS, "3" for Linux, or enter custom OS name. Leave empty for generic instructions.',
+            ),
+        editor: z
+            .string()
+            .optional()
+            .describe(
+                'Your preferred code editor: Type "1" for VS Code, "2" for JetBrains IDEs, "3" for Cursor, or enter your preferred editor name (e.g., "Zed", "Vim", etc.)',
+            ),
+        experience: z
+            .string()
+            .optional()
+            .describe(
+                'Your experience level: Type "1" for beginner, "2" for intermediate, "3" for advanced, or enter custom description',
+            ),
+    },
+    (args) => {
+        const osOptions = ["Windows", "macOS", "Linux"];
+        const editorOptions = ["VS Code", "JetBrains IDEs", "Cursor"];
+        const experienceOptions = ["beginner", "intermediate", "advanced"];
+
+        const platform = parseIndexedOption(args.platform, osOptions);
+        const editor = parseIndexedOption(args.editor, editorOptions);
+        const experience = parseIndexedOption(
+            args.experience,
+            experienceOptions,
+        );
+
+        let promptText = `I need help setting up the GitBook MCP server for development.
+
+**Platform**: ${platform || "Generic"}
+**Editor/IDE**: ${editor || "Not specified"}
+**Experience Level**: ${experience || "Not specified"}
+
+Please provide me with:
+
+1. **Prerequisites Check**: Help me verify I have all required tools installed (Node.js, Git, etc.)
+
+2. **Repository Setup**: Guide me through cloning the repository and installing dependencies
+
+3. **API Token Configuration**: 
+   - How to get a GitBook API token from https://app.gitbook.com/account/developer
+   - How to securely configure it in the environment file
+   - Best practices for token security
+
+4. **Development Workflow**: 
+   - How to build and run the server
+   - Using the MCP Inspector for testing
+   - Development mode with auto-rebuild
+
+5. **Finding GitBook IDs**: 
+   - Help me discover my GitBook organization ID and space IDs
+   - How to configure default IDs for easier development
+
+6. **IDE Integration**: ${editor ? `Specific setup instructions for ${editor}` : "Generic MCP integration setup for development"}
+
+7. **Testing and Validation**: 
+   - How to test that everything is working correctly
+   - Common troubleshooting steps
+
+8. **Next Steps**: 
+   - Understanding the codebase structure
+   - Making your first changes
+   - Contributing guidelines
+
+${platform ? `Please provide platform-specific commands and instructions for ${platform}.` : ""}
+${experience === "beginner" ? "Please include detailed explanations and assume I'm new to MCP development." : ""}
+${experience === "advanced" ? "You can skip basic explanations and focus on advanced configuration options." : ""}
+
+Start with checking prerequisites and guide me through each step systematically.`;
+
+        return {
+            description: `Development setup guidance for GitBook MCP server${platform ? ` on ${platform}` : ""}`,
+            messages: [
+                {
+                    role: "user",
+                    content: {
+                        type: "text",
+                        text: promptText,
+                    },
+                },
+            ],
+        };
+    },
+);
+
+// Helper function to parse indexed options
+function parseIndexedOption(
+    input: string | undefined,
+    options: string[],
+    defaultValue: string = "",
+): string {
+    if (!input) return defaultValue;
+
+    const trimmed = input.trim();
+    const index = parseInt(trimmed);
+
+    // If it's a valid index (1-based), return the corresponding option
+    if (!isNaN(index) && index >= 1 && index <= options.length) {
+        return options[index - 1] || defaultValue;
+    }
+
+    // Otherwise, return the input as-is (free-form text)
+    return trimmed;
+}
+
 // Start the server
 async function main() {
     const transport = new StdioServerTransport();
