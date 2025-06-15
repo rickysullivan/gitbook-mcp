@@ -42,7 +42,7 @@ jobs:
               run: npm test
 
             - name: Check Prettier formatting
-              run: npx prettier --check .
+              run: npm run format:check
 
             - name: Build project
               run: npm run build
@@ -119,12 +119,12 @@ jobs:
                   body: |
                       ## Changes in ${{ steps.bump_version.outputs.version }}
 
-                      This release was automatically created from the main branch.
+                      ${{ github.event_name == 'push' && 'This release was automatically created from a merged PR.' || 'This release was manually triggered.' }}
 
-                      ### Commits included:
-                      ${{ github.event.head_commit.message }}
+                      ### Recent commits:
+                      $(git log --oneline -10 --pretty=format:"- %s")
 
-                      **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.event.after }}
+                      **Full Changelog**: https://github.com/${{ github.repository }}/releases
                   draft: false
                   prerelease: ${{ contains(steps.version_type.outputs.type, 'prerelease') }}
 
@@ -132,4 +132,4 @@ jobs:
               if: steps.check_version.outputs.skip == 'false'
               run: npm publish
               env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || 'NOT_SET' }}
