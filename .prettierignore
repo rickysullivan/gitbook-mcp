@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Lock files
+package-lock.json
+
+# Git
+.git/
+
+# GitHub workflows (optional - remove if you want to format workflows)
+# .github/

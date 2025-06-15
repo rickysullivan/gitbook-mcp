@@ -3,7 +3,7 @@ node_modules/
 npm-debug.log*
 
 # Build output (uncomment out when using GitHub actions)
-# dist/
+dist/
 
 # Environment variables
 .env
@@ -51,9 +51,3 @@ jspm_packages/
 
 # Output of 'npm pack'
 *.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-.github/
-*.code-workspace

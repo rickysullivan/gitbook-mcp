@@ -1,0 +1,135 @@
+name: Release
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+        inputs:
+            version_type:
+                description: "Version type to release"
+                required: true
+                default: "patch"
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+                    - prerelease
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+                  registry-url: "https://registry.npmjs.org"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run tests
+              run: npm test
+
+            - name: Check Prettier formatting
+              run: npm run format:check
+
+            - name: Build project
+              run: npm run build
+
+            - name: Configure Git
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+
+            - name: Determine version type
+              id: version_type
+              run: |
+                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                    echo "type=${{ github.event.inputs.version_type }}" >> $GITHUB_OUTPUT
+                  else
+                    # Auto-determine version type based on commit messages
+                    COMMITS=$(git log --oneline $(git describe --tags --abbrev=0)..HEAD 2>/dev/null || git log --oneline)
+                    
+                    if echo "$COMMITS" | grep -qiE "^[a-f0-9]+ (feat|feature)"; then
+                      echo "type=minor" >> $GITHUB_OUTPUT
+                      echo "Auto-detected minor version (new features found)"
+                    elif echo "$COMMITS" | grep -qiE "^[a-f0-9]+ (break|breaking)"; then
+                      echo "type=major" >> $GITHUB_OUTPUT
+                      echo "Auto-detected major version (breaking changes found)"
+                    else
+                      echo "type=patch" >> $GITHUB_OUTPUT
+                      echo "Auto-detected patch version (fixes/improvements)"
+                    fi
+                  fi
+
+            - name: Check if version bump needed
+              id: check_version
+              run: |
+                  # Skip version bump if last commit was already a version bump
+                  LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+                  if echo "$LAST_COMMIT_MSG" | grep -q "^v[0-9]"; then
+                    echo "skip=true" >> $GITHUB_OUTPUT
+                    echo "Skipping release - last commit was already a version bump"
+                  else
+                    echo "skip=false" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Bump version
+              if: steps.check_version.outputs.skip == 'false'
+              id: bump_version
+              run: |
+                  VERSION_TYPE="${{ steps.version_type.outputs.type }}"
+                  echo "Bumping version with type: $VERSION_TYPE"
+
+                  # Update package.json version
+                  NEW_VERSION=$(npm version $VERSION_TYPE --no-git-tag-version)
+                  echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+                  echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+                  # Create git tag and commit
+                  git add package.json package-lock.json
+                  git commit -m "$NEW_VERSION"
+                  git tag "$NEW_VERSION"
+
+            - name: Push changes
+              if: steps.check_version.outputs.skip == 'false'
+              run: |
+                  git push origin main
+                  git push origin --tags
+
+            - name: Create GitHub Release
+              if: steps.check_version.outputs.skip == 'false'
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ steps.bump_version.outputs.version }}
+                  release_name: Release ${{ steps.bump_version.outputs.version }}
+                  body: |
+                      ## Changes in ${{ steps.bump_version.outputs.version }}
+
+                      ${{ github.event_name == 'push' && 'This release was automatically created from a merged PR.' || 'This release was manually triggered.' }}
+
+                      ### Recent commits:
+                      $(git log --oneline -10 --pretty=format:"- %s")
+
+                      **Full Changelog**: https://github.com/${{ github.repository }}/releases
+                  draft: false
+                  prerelease: ${{ contains(steps.version_type.outputs.type, 'prerelease') }}
+
+            - name: Publish to npm
+              if: steps.check_version.outputs.skip == 'false'
+              run: npm publish
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || 'NOT_SET' }}

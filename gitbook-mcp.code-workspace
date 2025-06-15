@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"typescript.preferences.includePackageJsonAutoImports": "on",
+		"terminal.integrated.env.osx": {
+			"GITBOOK_API_TOKEN": "${env:GITBOOK_API_TOKEN}"
+		},
+		"terminal.integrated.env.linux": {
+			"GITBOOK_API_TOKEN": "${env:GITBOOK_API_TOKEN}"
+		},
+		"terminal.integrated.env.windows": {
+			"GITBOOK_API_TOKEN": "${env:GITBOOK_API_TOKEN}"
+		},
+		"terminal.integrated.profiles.osx": {
+			"zsh (login)": {
+				"path": "/bin/zsh",
+				"args": [
+					"-l"
+				]
+			}
+		},
+		"terminal.integrated.defaultProfile.osx": "zsh (login)",
+		"files.associations": {
+			".env.local": "dotenv",
+			".env.example": "dotenv"
+		}
+	}
+}

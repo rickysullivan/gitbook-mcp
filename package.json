@@ -10,6 +10,8 @@
         "inspect": "npm run build && mcp-inspector node dist/index.js",
         "start": "node dist/index.js",
         "test": "tsc --noEmit",
+        "format": "prettier --write src",
+        "format:check": "prettier --check src",
         "setup": "cp .env.example .env.local && echo '✅ Created .env.local - now edit it with your GitBook API token'"
     },
     "bin": {
