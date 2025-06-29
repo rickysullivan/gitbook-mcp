@@ -5,6 +5,10 @@ on:
         branches: [main]
         types: [opened, synchronize, reopened]
 
+permissions:
+    pull-requests: write
+    contents: read
+
 jobs:
     test:
         runs-on: ubuntu-latest
@@ -42,3 +46,15 @@ jobs:
                     exit 1
                   fi
                   echo "✅ Build artifacts verified"
+
+    dependabot_merge:
+        runs-on: ubuntu-latest
+        needs: test
+        if: ${{ github.actor == 'dependabot[bot]' }}
+        steps:
+            - name: Auto-merge Dependabot PR
+              run: |
+                gh pr merge --auto --merge "$PR_URL"
+              env:
+                PR_URL: ${{ github.event.pull_request.html_url }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
